@@ -88,7 +88,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // Logo & tagline
                 const Text(
-                  'ClosetIQ',
+                  'RE:VIBE',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w700,

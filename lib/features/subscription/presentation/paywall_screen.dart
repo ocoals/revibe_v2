@@ -77,7 +77,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'ClosetIQ 프리미엄',
+                  'RE:VIBE 프리미엄',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,

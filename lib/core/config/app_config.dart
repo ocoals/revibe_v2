@@ -1,6 +1,6 @@
 class AppConfig {
-  static const String appName = 'ClosetIQ';
-  static const String appVersion = '0.1.0';
+  static const String appName = 'RE:VIBE';
+  static const String appVersion = '1.0.0';
 
   // Free tier limits
   static const int freeWardrobeLimit = 30;

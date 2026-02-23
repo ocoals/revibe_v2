@@ -14,7 +14,7 @@ class ClosetIQApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
-      title: 'ClosetIQ',
+      title: 'RE:VIBE',
       theme: AppTheme.light,
       routerConfig: router,
       debugShowCheckedModeBanner: false,

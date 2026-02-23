@@ -1,7 +1,7 @@
 name: closet_iq
-description: "AI Fashion Wardrobe Management - ClosetIQ"
+description: "AI Fashion Wardrobe Management - RE:VIBE"
 publish_to: 'none'
-version: 0.1.0+1
+version: 1.0.0+1
 
 environment:
   sdk: ^3.11.0
