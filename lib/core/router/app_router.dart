@@ -16,7 +16,12 @@ import '../../features/wardrobe/presentation/item_register_screen.dart';
 import '../../features/recreation/presentation/reference_input_screen.dart';
 import '../../features/recreation/presentation/analyzing_screen.dart';
 import '../../features/recreation/presentation/result_screen.dart';
+import '../../features/daily/presentation/calendar_screen.dart';
+import '../../features/daily/presentation/daily_record_screen.dart';
+import '../../features/daily/presentation/wardrobe_picker_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
+import '../../features/subscription/presentation/paywall_screen.dart';
+import '../../features/subscription/presentation/subscription_manage_screen.dart';
 import '../../shared/widgets/bottom_nav_bar.dart';
 
 // Route paths
@@ -36,6 +41,11 @@ class AppRoutes {
   static const String recreationResult = '/recreation/result/:id';
   static const String recreationGap = '/recreation/gap/:id';
   static const String settings = '/settings';
+  static const String dailyRecord = '/daily-record';
+  static const String dailyRecordCreate = '/daily-record/create';
+  static const String dailyRecordPickItems = '/daily-record/pick-items';
+  static const String paywall = '/paywall';
+  static const String subscriptionManage = '/subscription/manage';
 }
 
 // Navigation shell key
@@ -223,6 +233,38 @@ GoRouter createRouter(Ref ref) {
         ),
       ),
       // GapAnalysisSheet is now shown as a bottom sheet from ResultScreen
+
+      // Daily Record routes (outside shell, full screen)
+      GoRoute(
+        path: AppRoutes.dailyRecord,
+        builder: (context, state) => const CalendarScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.dailyRecordCreate,
+        builder: (context, state) {
+          final dateStr = state.uri.queryParameters['date'];
+          final date =
+              dateStr != null ? DateTime.parse(dateStr) : DateTime.now();
+          return DailyRecordScreen(initialDate: date);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.dailyRecordPickItems,
+        builder: (context, state) {
+          final date = state.extra as DateTime;
+          return WardrobePickerScreen(date: date);
+        },
+      ),
+
+      // Subscription routes
+      GoRoute(
+        path: AppRoutes.paywall,
+        builder: (context, state) => const PaywallScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.subscriptionManage,
+        builder: (context, state) => const SubscriptionManageScreen(),
+      ),
     ],
   );
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/router/app_router.dart';
+import '../../recommendation/presentation/widgets/recommended_outfit_card.dart';
 
 /// S05: Home Dashboard
 class HomeScreen extends StatelessWidget {
@@ -74,12 +75,18 @@ class HomeScreen extends StatelessWidget {
                     _QuickActionButton(
                       icon: Icons.edit_note,
                       label: '기록',
-                      onTap: () {
-                        // TODO: Daily outfit recording (Tier 2)
-                      },
+                      onTap: () => context.push(AppRoutes.dailyRecord),
                     ),
                   ],
                 ),
+              ),
+            ),
+
+            // Recommended Outfit Card
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(0, 8, 0, 16),
+                child: RecommendedOutfitCard(),
               ),
             ),
 

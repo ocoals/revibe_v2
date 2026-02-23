@@ -5,6 +5,7 @@ import '../../../core/config/app_config.dart';
 import '../../../core/constants/categories.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/router/app_router.dart';
+import '../../subscription/providers/subscription_provider.dart';
 import '../providers/wardrobe_provider.dart';
 import 'widgets/wardrobe_grid_item.dart';
 
@@ -94,15 +95,16 @@ class WardrobeScreen extends ConsumerWidget {
             ),
           ),
 
-          // Free tier progress bar
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: countAsync.when(
-              data: (count) => _buildProgressBar(count),
-              loading: () => _buildProgressBar(0),
-              error: (_, _) => _buildProgressBar(0),
+          // Free tier progress bar (hidden for premium users)
+          if (!ref.watch(isPremiumProvider))
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: countAsync.when(
+                data: (count) => _buildProgressBar(count),
+                loading: () => _buildProgressBar(0),
+                error: (_, _) => _buildProgressBar(0),
+              ),
             ),
-          ),
 
           // Item grid
           Expanded(

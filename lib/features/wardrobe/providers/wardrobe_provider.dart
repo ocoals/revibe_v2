@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/constants/categories.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../subscription/providers/subscription_provider.dart';
 import '../data/models/wardrobe_item.dart';
 import '../data/wardrobe_repository.dart';
 
@@ -45,8 +46,11 @@ final wardrobeCountProvider = FutureProvider<int>((ref) async {
   return repo.getItemCount(user.id);
 });
 
-/// Whether user can add more items (under free tier limit)
+/// Whether user can add more items (premium = unlimited, free = 30 limit)
 final canAddItemProvider = FutureProvider<bool>((ref) async {
+  final isPremium = ref.watch(isPremiumProvider);
+  if (isPremium) return true;
+
   final count = await ref.watch(wardrobeCountProvider.future);
   return count < AppConfig.freeWardrobeLimit;
 });

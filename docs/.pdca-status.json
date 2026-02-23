@@ -1,13 +1,18 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-02-23T09:00:00.000Z",
+  "lastUpdated": "2026-02-23T12:46:34.838Z",
   "activeFeatures": [
     "_shared",
     "recreate-analyze",
     "onboarding-analyze",
-    "f1-onboarding"
+    "f1-onboarding",
+    "f5-daily-record",
+    "f6-outfit-recommendation",
+    "F6 Outfit Recommendation - Gap Analysis",
+    "f7-premium-subscription",
+    "F7 Premium Subscription - Gap Analysis"
   ],
-  "primaryFeature": "f1-onboarding",
+  "primaryFeature": "f7-premium-subscription",
   "features": {
     "project-setup": {
       "phase": "completed",
@@ -96,6 +101,85 @@
         "started": "2026-02-23T08:30:00.000Z",
         "lastUpdated": "2026-02-23T09:15:00.000Z"
       }
+    },
+    "f5-daily-record": {
+      "phase": "completed",
+      "phaseNumber": 5,
+      "matchRate": 97,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {
+        "plan": "docs/01-plan/features/f5-daily-record.plan.md",
+        "design": "docs/02-design/features/f5-daily-record.design.md",
+        "analysis": "docs/03-analysis/f5-daily-record.analysis.md",
+        "report": "docs/04-report/f5-daily-record.report.md"
+      },
+      "timestamps": {
+        "started": "2026-02-23T09:30:00.000Z",
+        "lastUpdated": "2026-02-23T13:30:00.000Z"
+      }
+    },
+    "f6-outfit-recommendation": {
+      "phase": "completed",
+      "phaseNumber": 5,
+      "matchRate": 98,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {
+        "plan": "docs/01-plan/features/f6-outfit-recommendation.plan.md",
+        "design": "docs/02-design/features/f6-outfit-recommendation.design.md",
+        "analysis": "docs/03-analysis/f6-outfit-recommendation.analysis.md",
+        "report": "docs/04-report/f6-outfit-recommendation.report.md"
+      },
+      "timestamps": {
+        "started": "2026-02-23T14:00:00.000Z",
+        "lastUpdated": "2026-02-23T16:30:00.000Z"
+      }
+    },
+    "F6 Outfit Recommendation - Gap Analysis": {
+      "phase": "act",
+      "phaseNumber": 5,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-23T12:14:46.002Z",
+        "lastUpdated": "2026-02-23T12:14:46.003Z"
+      },
+      "previousPhase": "check",
+      "autoAdvanced": true
+    },
+    "f7-premium-subscription": {
+      "phase": "completed",
+      "phaseNumber": 5,
+      "matchRate": 97,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {
+        "plan": "docs/01-plan/features/f7-premium-subscription.plan.md",
+        "design": "docs/02-design/features/f7-premium-subscription.design.md",
+        "analysis": "docs/03-analysis/f7-premium-subscription.analysis.md",
+        "report": "docs/04-report/f7-premium-subscription.report.md"
+      },
+      "timestamps": {
+        "started": "2026-02-23T17:00:00.000Z",
+        "lastUpdated": "2026-02-23T19:30:00.000Z"
+      }
+    },
+    "F7 Premium Subscription - Gap Analysis": {
+      "phase": "act",
+      "phaseNumber": 5,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-23T12:46:34.838Z",
+        "lastUpdated": "2026-02-23T12:46:34.838Z"
+      },
+      "previousPhase": "check",
+      "autoAdvanced": true
     }
   },
   "pipeline": {
@@ -106,7 +190,7 @@
   "session": {
     "startedAt": "2026-02-23T06:00:00.000Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-02-23T08:27:32.481Z"
+    "lastActivity": "2026-02-23T12:46:34.838Z"
   },
   "history": [
     {
@@ -202,6 +286,102 @@
     {
       "timestamp": "2026-02-23T09:15:00.000Z",
       "feature": "f1-onboarding",
+      "phase": "report",
+      "action": "completed"
+    },
+    {
+      "timestamp": "2026-02-23T11:45:00.000Z",
+      "feature": "f5-daily-record",
+      "phase": "design",
+      "action": "created"
+    },
+    {
+      "timestamp": "2026-02-23T12:30:00.000Z",
+      "feature": "f5-daily-record",
+      "phase": "do",
+      "action": "completed"
+    },
+    {
+      "timestamp": "2026-02-23T13:00:00.000Z",
+      "feature": "f5-daily-record",
+      "phase": "check",
+      "action": "completed"
+    },
+    {
+      "timestamp": "2026-02-23T13:30:00.000Z",
+      "feature": "f5-daily-record",
+      "phase": "report",
+      "action": "completed"
+    },
+    {
+      "timestamp": "2026-02-23T14:00:00.000Z",
+      "feature": "f6-outfit-recommendation",
+      "phase": "plan",
+      "action": "created"
+    },
+    {
+      "timestamp": "2026-02-23T14:30:00.000Z",
+      "feature": "f6-outfit-recommendation",
+      "phase": "design",
+      "action": "created"
+    },
+    {
+      "timestamp": "2026-02-23T15:30:00.000Z",
+      "feature": "f6-outfit-recommendation",
+      "phase": "do",
+      "action": "completed"
+    },
+    {
+      "timestamp": "2026-02-23T16:00:00.000Z",
+      "feature": "f6-outfit-recommendation",
+      "phase": "check",
+      "action": "completed"
+    },
+    {
+      "timestamp": "2026-02-23T12:14:46.003Z",
+      "feature": "F6 Outfit Recommendation - Gap Analysis",
+      "phase": "act",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-23T16:30:00.000Z",
+      "feature": "f6-outfit-recommendation",
+      "phase": "report",
+      "action": "completed"
+    },
+    {
+      "timestamp": "2026-02-23T17:00:00.000Z",
+      "feature": "f7-premium-subscription",
+      "phase": "plan",
+      "action": "created"
+    },
+    {
+      "timestamp": "2026-02-23T17:30:00.000Z",
+      "feature": "f7-premium-subscription",
+      "phase": "design",
+      "action": "created"
+    },
+    {
+      "timestamp": "2026-02-23T18:30:00.000Z",
+      "feature": "f7-premium-subscription",
+      "phase": "do",
+      "action": "completed"
+    },
+    {
+      "timestamp": "2026-02-23T19:00:00.000Z",
+      "feature": "f7-premium-subscription",
+      "phase": "check",
+      "action": "completed"
+    },
+    {
+      "timestamp": "2026-02-23T12:46:34.838Z",
+      "feature": "F7 Premium Subscription - Gap Analysis",
+      "phase": "act",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-23T19:30:00.000Z",
+      "feature": "f7-premium-subscription",
       "phase": "report",
       "action": "completed"
     }

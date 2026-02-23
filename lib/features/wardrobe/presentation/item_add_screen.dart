@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/utils/image_utils.dart';
+import '../../subscription/presentation/widgets/limit_reached_sheet.dart';
 import '../providers/item_registration_provider.dart';
 import '../providers/wardrobe_provider.dart';
 
@@ -79,16 +80,11 @@ class ItemAddScreen extends ConsumerWidget {
     WidgetRef ref,
     ImageSource source,
   ) async {
-    // Check free tier limit
+    // Check free tier limit (premium users skip this)
     final canAdd = await ref.read(canAddItemProvider.future);
     if (!canAdd) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('무료 한도(30벌)에 도달했습니다'),
-            backgroundColor: AppColors.warning,
-          ),
-        );
+        LimitReachedSheet.show(context, LimitType.wardrobe);
       }
       return;
     }

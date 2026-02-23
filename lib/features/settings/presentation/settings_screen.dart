@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/colors.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../subscription/providers/subscription_provider.dart';
+import '../../subscription/presentation/paywall_screen.dart';
+import '../../subscription/presentation/subscription_manage_screen.dart';
 
 /// S13: Settings / My page
 class SettingsScreen extends ConsumerWidget {
@@ -35,12 +38,21 @@ class SettingsScreen extends ConsumerWidget {
                         color: AppColors.textTitle,
                       ),
                     ),
-                    Text(
-                      '무료 플랜',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textCaption,
-                      ),
+                    Consumer(
+                      builder: (context, ref, _) {
+                        final isPremium = ref.watch(isPremiumProvider);
+                        return Text(
+                          isPremium ? '프리미엄' : '무료 플랜',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: isPremium
+                                ? AppColors.premium
+                                : AppColors.textCaption,
+                            fontWeight:
+                                isPremium ? FontWeight.w600 : FontWeight.normal,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -50,12 +62,23 @@ class SettingsScreen extends ConsumerWidget {
 
           const Divider(),
 
-          _SettingsTile(
-            icon: Icons.workspace_premium,
-            label: '프리미엄 업그레이드',
-            iconColor: AppColors.premium,
-            onTap: () {
-              // TODO: Navigate to premium upgrade
+          Consumer(
+            builder: (context, ref, _) {
+              final isPremium = ref.watch(isPremiumProvider);
+              return _SettingsTile(
+                icon: Icons.workspace_premium,
+                label: isPremium ? '구독 관리' : '프리미엄 업그레이드',
+                iconColor: AppColors.premium,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => isPremium
+                          ? const SubscriptionManageScreen()
+                          : const PaywallScreen(),
+                    ),
+                  );
+                },
+              );
             },
           ),
           _SettingsTile(
