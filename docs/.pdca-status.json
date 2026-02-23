@@ -1,8 +1,13 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-02-23T08:30:00.000Z",
-  "activeFeatures": [],
-  "primaryFeature": null,
+  "lastUpdated": "2026-02-23T09:00:00.000Z",
+  "activeFeatures": [
+    "_shared",
+    "recreate-analyze",
+    "onboarding-analyze",
+    "f1-onboarding"
+  ],
+  "primaryFeature": "f1-onboarding",
   "features": {
     "project-setup": {
       "phase": "completed",
@@ -37,6 +42,60 @@
         "started": "2026-02-23T06:00:00.000Z",
         "lastUpdated": "2026-02-23T08:30:00.000Z"
       }
+    },
+    "_shared": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-23T06:53:45.317Z",
+        "lastUpdated": "2026-02-23T07:44:34.536Z"
+      },
+      "lastFile": "/Users/ochaemin/dev/MyApp/supabase/functions/_shared/claude-client.ts"
+    },
+    "recreate-analyze": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-23T07:34:10.365Z",
+        "lastUpdated": "2026-02-23T07:51:19.498Z"
+      },
+      "lastFile": "/Users/ochaemin/dev/MyApp/supabase/functions/recreate-analyze/index.ts"
+    },
+    "onboarding-analyze": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-23T08:27:32.481Z",
+        "lastUpdated": "2026-02-23T08:27:32.481Z"
+      },
+      "lastFile": "/Users/ochaemin/dev/MyApp/supabase/functions/onboarding-analyze/index.ts"
+    },
+    "f1-onboarding": {
+      "phase": "completed",
+      "phaseNumber": 5,
+      "matchRate": 91,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {
+        "analysis": "docs/03-analysis/f1-onboarding.analysis.md",
+        "report": "docs/04-report/f1-onboarding.report.md"
+      },
+      "timestamps": {
+        "started": "2026-02-23T08:30:00.000Z",
+        "lastUpdated": "2026-02-23T09:15:00.000Z"
+      }
     }
   },
   "pipeline": {
@@ -47,7 +106,7 @@
   "session": {
     "startedAt": "2026-02-23T06:00:00.000Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-02-23T08:30:00.000Z"
+    "lastActivity": "2026-02-23T08:27:32.481Z"
   },
   "history": [
     {
@@ -89,6 +148,60 @@
     {
       "timestamp": "2026-02-23T08:30:00.000Z",
       "feature": "f2-look-recreation",
+      "phase": "report",
+      "action": "completed"
+    },
+    {
+      "timestamp": "2026-02-23T06:53:45.317Z",
+      "feature": "_shared",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-23T07:34:10.365Z",
+      "feature": "recreate-analyze",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-23T07:35:16.692Z",
+      "feature": "_shared",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-23T07:44:23.907Z",
+      "feature": "_shared",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-23T07:44:34.536Z",
+      "feature": "_shared",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-23T07:51:19.498Z",
+      "feature": "recreate-analyze",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-23T08:27:32.481Z",
+      "feature": "onboarding-analyze",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-23T09:00:00.000Z",
+      "feature": "f1-onboarding",
+      "phase": "check",
+      "action": "completed"
+    },
+    {
+      "timestamp": "2026-02-23T09:15:00.000Z",
+      "feature": "f1-onboarding",
       "phase": "report",
       "action": "completed"
     }
