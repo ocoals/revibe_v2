@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../config/supabase_config.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/onboarding/presentation/welcome_screen.dart';
@@ -10,10 +12,10 @@ import '../../features/home/presentation/home_screen.dart';
 import '../../features/wardrobe/presentation/wardrobe_screen.dart';
 import '../../features/wardrobe/presentation/item_detail_screen.dart';
 import '../../features/wardrobe/presentation/item_add_screen.dart';
+import '../../features/wardrobe/presentation/item_register_screen.dart';
 import '../../features/recreation/presentation/reference_input_screen.dart';
 import '../../features/recreation/presentation/analyzing_screen.dart';
 import '../../features/recreation/presentation/result_screen.dart';
-import '../../features/recreation/presentation/gap_analysis_sheet.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../shared/widgets/bottom_nav_bar.dart';
 
@@ -28,6 +30,7 @@ class AppRoutes {
   static const String wardrobe = '/wardrobe';
   static const String wardrobeDetail = '/wardrobe/:id';
   static const String wardrobeAdd = '/wardrobe/add';
+  static const String wardrobeRegister = '/wardrobe/register';
   static const String recreation = '/recreation';
   static const String recreationAnalyzing = '/recreation/analyzing';
   static const String recreationResult = '/recreation/result/:id';
@@ -39,23 +42,103 @@ class AppRoutes {
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
+// Onboarding status cache (reset on auth change)
+bool? _cachedOnboardingCompleted;
+String? _cachedUserId;
+
+Future<bool> _isOnboardingCompleted() async {
+  final user = SupabaseConfig.client.auth.currentUser;
+  if (user == null) return false;
+
+  // Use cache if same user
+  if (_cachedUserId == user.id && _cachedOnboardingCompleted != null) {
+    return _cachedOnboardingCompleted!;
+  }
+
+  try {
+    final profile = await SupabaseConfig.client
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', user.id)
+        .maybeSingle();
+    _cachedOnboardingCompleted = profile?['onboarding_completed'] == true;
+    _cachedUserId = user.id;
+    return _cachedOnboardingCompleted!;
+  } catch (_) {
+    return true; // Assume completed on error to avoid blocking
+  }
+}
+
+/// Call when onboarding is completed to update cache
+void markOnboardingCompleted() {
+  _cachedOnboardingCompleted = true;
+}
+
+/// Call on logout to reset cache
+void resetOnboardingCache() {
+  _cachedOnboardingCompleted = null;
+  _cachedUserId = null;
+}
+
+/// Converts a Stream to a Listenable for GoRouter refresh
+class _AuthStreamNotifier extends ChangeNotifier {
+  late final StreamSubscription _subscription;
+
+  _AuthStreamNotifier() {
+    _subscription = SupabaseConfig.client.auth.onAuthStateChange.listen((_) {
+      notifyListeners();
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
+
 GoRouter createRouter(Ref ref) {
+  final authNotifier = _AuthStreamNotifier();
+
+  // Reset onboarding cache on auth state changes
+  ref.listen(authStateProvider, (prev, next) {
+    if (next.valueOrNull == null) {
+      resetOnboardingCache();
+    }
+  });
+
+  ref.onDispose(() => authNotifier.dispose());
+
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutes.home,
-    redirect: (context, state) {
-      final authState = ref.read(authStateProvider);
-      final isLoggedIn = authState.valueOrNull != null;
+    refreshListenable: authNotifier,
+    redirect: (context, state) async {
+      final isLoggedIn =
+          SupabaseConfig.client.auth.currentSession != null;
       final isOnLoginPage = state.matchedLocation == AppRoutes.login;
+      final isOnOnboarding =
+          state.matchedLocation.startsWith('/onboarding');
 
-      // Not logged in -> redirect to login
+      // Not logged in -> login
       if (!isLoggedIn && !isOnLoginPage) {
         return AppRoutes.login;
       }
 
-      // Logged in but on login page -> redirect to home
-      if (isLoggedIn && isOnLoginPage) {
-        return AppRoutes.home;
+      // Not logged in, already on login -> stay
+      if (!isLoggedIn) return null;
+
+      // Logged in: check onboarding status
+      final onboardingDone = await _isOnboardingCompleted();
+
+      // On login page -> go to onboarding or home
+      if (isOnLoginPage) {
+        return onboardingDone ? AppRoutes.home : AppRoutes.welcome;
+      }
+
+      // On main pages but onboarding not done -> redirect to onboarding
+      if (!isOnOnboarding && !onboardingDone) {
+        return AppRoutes.welcome;
       }
 
       return null;
@@ -113,16 +196,21 @@ GoRouter createRouter(Ref ref) {
         ],
       ),
 
-      // Detail routes (outside shell, full screen)
+      // Wardrobe routes (outside shell, full screen)
+      // Literal paths must come before parameterized :id route
+      GoRoute(
+        path: AppRoutes.wardrobeAdd,
+        builder: (context, state) => const ItemAddScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.wardrobeRegister,
+        builder: (context, state) => const ItemRegisterScreen(),
+      ),
       GoRoute(
         path: AppRoutes.wardrobeDetail,
         builder: (context, state) => ItemDetailScreen(
           itemId: state.pathParameters['id']!,
         ),
-      ),
-      GoRoute(
-        path: AppRoutes.wardrobeAdd,
-        builder: (context, state) => const ItemAddScreen(),
       ),
       GoRoute(
         path: AppRoutes.recreationAnalyzing,
@@ -134,12 +222,7 @@ GoRouter createRouter(Ref ref) {
           recreationId: state.pathParameters['id']!,
         ),
       ),
-      GoRoute(
-        path: AppRoutes.recreationGap,
-        builder: (context, state) => GapAnalysisSheet(
-          recreationId: state.pathParameters['id']!,
-        ),
-      ),
+      // GapAnalysisSheet is now shown as a bottom sheet from ResultScreen
     ],
   );
 }

@@ -10,10 +10,14 @@ class AppTheme {
         primary: AppColors.primary,
         onPrimary: Colors.white,
         primaryContainer: AppColors.primaryLight,
+        onPrimaryContainer: AppColors.primary,
         secondary: AppColors.success,
+        secondaryContainer: AppColors.primary,
+        onSecondaryContainer: Colors.white,
         error: AppColors.error,
         surface: AppColors.cardBackground,
         onSurface: AppColors.textTitle,
+        onSurfaceVariant: AppColors.textBody,
       ),
       scaffoldBackgroundColor: AppColors.background,
       fontFamily: 'Pretendard',
@@ -103,6 +107,7 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.chipInactive,
         selectedColor: AppColors.primary,
+        checkmarkColor: Colors.white,
         labelStyle: const TextStyle(
           fontFamily: 'Pretendard',
           fontSize: 12,
@@ -111,6 +116,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
+        side: const BorderSide(color: AppColors.divider),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       ),
 

@@ -34,6 +34,22 @@ class AuthService {
     );
   }
 
+  /// Sign up with email + password
+  Future<void> signUpWithEmail(String email, String password) async {
+    await _client.auth.signUp(
+      email: email,
+      password: password,
+    );
+  }
+
+  /// Sign in with email + password
+  Future<void> signInWithEmail(String email, String password) async {
+    await _client.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
+  }
+
   /// Sign out
   Future<void> signOut() async {
     await _client.auth.signOut();

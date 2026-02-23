@@ -22,23 +22,35 @@ WardrobeItem _$WardrobeItemFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$WardrobeItem {
   String get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'user_id')
   String get userId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'image_url')
   String get imageUrl => throw _privateConstructorUsedError;
+  @JsonKey(name: 'original_image_url')
   String? get originalImageUrl => throw _privateConstructorUsedError;
   String get category => throw _privateConstructorUsedError;
   String? get subcategory => throw _privateConstructorUsedError;
+  @JsonKey(name: 'color_hex')
   String get colorHex => throw _privateConstructorUsedError;
+  @JsonKey(name: 'color_name')
   String get colorName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'color_hsl')
   Map<String, int> get colorHsl => throw _privateConstructorUsedError;
+  @JsonKey(name: 'style_tags')
   List<String> get styleTags => throw _privateConstructorUsedError;
   String? get fit => throw _privateConstructorUsedError;
   String? get pattern => throw _privateConstructorUsedError;
   String? get brand => throw _privateConstructorUsedError;
   List<String> get season => throw _privateConstructorUsedError;
+  @JsonKey(name: 'wear_count')
   int get wearCount => throw _privateConstructorUsedError;
+  @JsonKey(name: 'last_worn_at')
   DateTime? get lastWornAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_active')
   bool get isActive => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'updated_at')
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this WardrobeItem to a JSON map.
@@ -60,24 +72,24 @@ abstract class $WardrobeItemCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String userId,
-    String imageUrl,
-    String? originalImageUrl,
+    @JsonKey(name: 'user_id') String userId,
+    @JsonKey(name: 'image_url') String imageUrl,
+    @JsonKey(name: 'original_image_url') String? originalImageUrl,
     String category,
     String? subcategory,
-    String colorHex,
-    String colorName,
-    Map<String, int> colorHsl,
-    List<String> styleTags,
+    @JsonKey(name: 'color_hex') String colorHex,
+    @JsonKey(name: 'color_name') String colorName,
+    @JsonKey(name: 'color_hsl') Map<String, int> colorHsl,
+    @JsonKey(name: 'style_tags') List<String> styleTags,
     String? fit,
     String? pattern,
     String? brand,
     List<String> season,
-    int wearCount,
-    DateTime? lastWornAt,
-    bool isActive,
-    DateTime createdAt,
-    DateTime updatedAt,
+    @JsonKey(name: 'wear_count') int wearCount,
+    @JsonKey(name: 'last_worn_at') DateTime? lastWornAt,
+    @JsonKey(name: 'is_active') bool isActive,
+    @JsonKey(name: 'created_at') DateTime createdAt,
+    @JsonKey(name: 'updated_at') DateTime updatedAt,
   });
 }
 
@@ -211,24 +223,24 @@ abstract class _$$WardrobeItemImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
-    String userId,
-    String imageUrl,
-    String? originalImageUrl,
+    @JsonKey(name: 'user_id') String userId,
+    @JsonKey(name: 'image_url') String imageUrl,
+    @JsonKey(name: 'original_image_url') String? originalImageUrl,
     String category,
     String? subcategory,
-    String colorHex,
-    String colorName,
-    Map<String, int> colorHsl,
-    List<String> styleTags,
+    @JsonKey(name: 'color_hex') String colorHex,
+    @JsonKey(name: 'color_name') String colorName,
+    @JsonKey(name: 'color_hsl') Map<String, int> colorHsl,
+    @JsonKey(name: 'style_tags') List<String> styleTags,
     String? fit,
     String? pattern,
     String? brand,
     List<String> season,
-    int wearCount,
-    DateTime? lastWornAt,
-    bool isActive,
-    DateTime createdAt,
-    DateTime updatedAt,
+    @JsonKey(name: 'wear_count') int wearCount,
+    @JsonKey(name: 'last_worn_at') DateTime? lastWornAt,
+    @JsonKey(name: 'is_active') bool isActive,
+    @JsonKey(name: 'created_at') DateTime createdAt,
+    @JsonKey(name: 'updated_at') DateTime updatedAt,
   });
 }
 
@@ -354,24 +366,24 @@ class __$$WardrobeItemImplCopyWithImpl<$Res>
 class _$WardrobeItemImpl implements _WardrobeItem {
   const _$WardrobeItemImpl({
     required this.id,
-    required this.userId,
-    required this.imageUrl,
-    this.originalImageUrl,
+    @JsonKey(name: 'user_id') required this.userId,
+    @JsonKey(name: 'image_url') required this.imageUrl,
+    @JsonKey(name: 'original_image_url') this.originalImageUrl,
     required this.category,
     this.subcategory,
-    required this.colorHex,
-    required this.colorName,
-    required final Map<String, int> colorHsl,
-    final List<String> styleTags = const [],
+    @JsonKey(name: 'color_hex') required this.colorHex,
+    @JsonKey(name: 'color_name') required this.colorName,
+    @JsonKey(name: 'color_hsl') required final Map<String, int> colorHsl,
+    @JsonKey(name: 'style_tags') final List<String> styleTags = const [],
     this.fit,
     this.pattern,
     this.brand,
     final List<String> season = const ['spring', 'summer', 'fall', 'winter'],
-    this.wearCount = 0,
-    this.lastWornAt,
-    this.isActive = true,
-    required this.createdAt,
-    required this.updatedAt,
+    @JsonKey(name: 'wear_count') this.wearCount = 0,
+    @JsonKey(name: 'last_worn_at') this.lastWornAt,
+    @JsonKey(name: 'is_active') this.isActive = true,
+    @JsonKey(name: 'created_at') required this.createdAt,
+    @JsonKey(name: 'updated_at') required this.updatedAt,
   }) : _colorHsl = colorHsl,
        _styleTags = styleTags,
        _season = season;
@@ -382,21 +394,27 @@ class _$WardrobeItemImpl implements _WardrobeItem {
   @override
   final String id;
   @override
+  @JsonKey(name: 'user_id')
   final String userId;
   @override
+  @JsonKey(name: 'image_url')
   final String imageUrl;
   @override
+  @JsonKey(name: 'original_image_url')
   final String? originalImageUrl;
   @override
   final String category;
   @override
   final String? subcategory;
   @override
+  @JsonKey(name: 'color_hex')
   final String colorHex;
   @override
+  @JsonKey(name: 'color_name')
   final String colorName;
   final Map<String, int> _colorHsl;
   @override
+  @JsonKey(name: 'color_hsl')
   Map<String, int> get colorHsl {
     if (_colorHsl is EqualUnmodifiableMapView) return _colorHsl;
     // ignore: implicit_dynamic_type
@@ -405,7 +423,7 @@ class _$WardrobeItemImpl implements _WardrobeItem {
 
   final List<String> _styleTags;
   @override
-  @JsonKey()
+  @JsonKey(name: 'style_tags')
   List<String> get styleTags {
     if (_styleTags is EqualUnmodifiableListView) return _styleTags;
     // ignore: implicit_dynamic_type
@@ -428,16 +446,19 @@ class _$WardrobeItemImpl implements _WardrobeItem {
   }
 
   @override
-  @JsonKey()
+  @JsonKey(name: 'wear_count')
   final int wearCount;
   @override
+  @JsonKey(name: 'last_worn_at')
   final DateTime? lastWornAt;
   @override
-  @JsonKey()
+  @JsonKey(name: 'is_active')
   final bool isActive;
   @override
+  @JsonKey(name: 'created_at')
   final DateTime createdAt;
   @override
+  @JsonKey(name: 'updated_at')
   final DateTime updatedAt;
 
   @override
@@ -527,24 +548,24 @@ class _$WardrobeItemImpl implements _WardrobeItem {
 abstract class _WardrobeItem implements WardrobeItem {
   const factory _WardrobeItem({
     required final String id,
-    required final String userId,
-    required final String imageUrl,
-    final String? originalImageUrl,
+    @JsonKey(name: 'user_id') required final String userId,
+    @JsonKey(name: 'image_url') required final String imageUrl,
+    @JsonKey(name: 'original_image_url') final String? originalImageUrl,
     required final String category,
     final String? subcategory,
-    required final String colorHex,
-    required final String colorName,
-    required final Map<String, int> colorHsl,
-    final List<String> styleTags,
+    @JsonKey(name: 'color_hex') required final String colorHex,
+    @JsonKey(name: 'color_name') required final String colorName,
+    @JsonKey(name: 'color_hsl') required final Map<String, int> colorHsl,
+    @JsonKey(name: 'style_tags') final List<String> styleTags,
     final String? fit,
     final String? pattern,
     final String? brand,
     final List<String> season,
-    final int wearCount,
-    final DateTime? lastWornAt,
-    final bool isActive,
-    required final DateTime createdAt,
-    required final DateTime updatedAt,
+    @JsonKey(name: 'wear_count') final int wearCount,
+    @JsonKey(name: 'last_worn_at') final DateTime? lastWornAt,
+    @JsonKey(name: 'is_active') final bool isActive,
+    @JsonKey(name: 'created_at') required final DateTime createdAt,
+    @JsonKey(name: 'updated_at') required final DateTime updatedAt,
   }) = _$WardrobeItemImpl;
 
   factory _WardrobeItem.fromJson(Map<String, dynamic> json) =
@@ -553,22 +574,29 @@ abstract class _WardrobeItem implements WardrobeItem {
   @override
   String get id;
   @override
+  @JsonKey(name: 'user_id')
   String get userId;
   @override
+  @JsonKey(name: 'image_url')
   String get imageUrl;
   @override
+  @JsonKey(name: 'original_image_url')
   String? get originalImageUrl;
   @override
   String get category;
   @override
   String? get subcategory;
   @override
+  @JsonKey(name: 'color_hex')
   String get colorHex;
   @override
+  @JsonKey(name: 'color_name')
   String get colorName;
   @override
+  @JsonKey(name: 'color_hsl')
   Map<String, int> get colorHsl;
   @override
+  @JsonKey(name: 'style_tags')
   List<String> get styleTags;
   @override
   String? get fit;
@@ -579,14 +607,19 @@ abstract class _WardrobeItem implements WardrobeItem {
   @override
   List<String> get season;
   @override
+  @JsonKey(name: 'wear_count')
   int get wearCount;
   @override
+  @JsonKey(name: 'last_worn_at')
   DateTime? get lastWornAt;
   @override
+  @JsonKey(name: 'is_active')
   bool get isActive;
   @override
+  @JsonKey(name: 'created_at')
   DateTime get createdAt;
   @override
+  @JsonKey(name: 'updated_at')
   DateTime get updatedAt;
 
   /// Create a copy of WardrobeItem

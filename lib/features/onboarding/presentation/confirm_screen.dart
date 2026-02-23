@@ -1,10 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/colors.dart';
+import '../../../core/config/supabase_config.dart';
+import '../../../core/router/app_router.dart';
 
 /// S04: Onboarding item confirmation screen
 /// Shows detected items after background removal & color extraction
 class ConfirmScreen extends StatelessWidget {
   const ConfirmScreen({super.key});
+
+  Future<void> _completeOnboarding(BuildContext context) async {
+    final user = SupabaseConfig.client.auth.currentUser;
+    if (user != null) {
+      try {
+        await SupabaseConfig.client.from('profiles').update({
+          'onboarding_completed': true,
+        }).eq('id', user.id);
+      } catch (_) {}
+    }
+    markOnboardingCompleted();
+    if (context.mounted) context.go(AppRoutes.home);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +65,7 @@ class ConfirmScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Save items and navigate to home or recreation
-                  },
+                  onPressed: () => _completeOnboarding(context),
                   child: const Text('옷장에 추가하기'),
                 ),
               ),

@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../core/constants/colors.dart';
+import '../../../core/router/app_router.dart';
+import '../../../core/utils/image_utils.dart';
+import '../providers/item_registration_provider.dart';
+import '../providers/wardrobe_provider.dart';
 
-/// S08: Add item (camera -> background removal -> registration)
-class ItemAddScreen extends StatelessWidget {
+/// S08: Add item (camera/gallery → image processing → register screen)
+class ItemAddScreen extends ConsumerWidget {
   const ItemAddScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: const Text('아이템 추가')),
       body: SafeArea(
@@ -44,9 +51,7 @@ class ItemAddScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Launch camera
-                  },
+                  onPressed: () => _pickImage(context, ref, ImageSource.camera),
                   icon: const Icon(Icons.camera_alt),
                   label: const Text('카메라로 촬영'),
                 ),
@@ -56,9 +61,8 @@ class ItemAddScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 52,
                 child: OutlinedButton.icon(
-                  onPressed: () {
-                    // TODO: Open gallery
-                  },
+                  onPressed: () =>
+                      _pickImage(context, ref, ImageSource.gallery),
                   icon: const Icon(Icons.photo_library),
                   label: const Text('갤러리에서 선택'),
                 ),
@@ -68,5 +72,58 @@ class ItemAddScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _pickImage(
+    BuildContext context,
+    WidgetRef ref,
+    ImageSource source,
+  ) async {
+    // Check free tier limit
+    final canAdd = await ref.read(canAddItemProvider.future);
+    if (!canAdd) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('무료 한도(30벌)에 도달했습니다'),
+            backgroundColor: AppColors.warning,
+          ),
+        );
+      }
+      return;
+    }
+
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: source,
+      maxWidth: 2048,
+      maxHeight: 2048,
+    );
+
+    if (picked == null) return;
+
+    final rawBytes = await picked.readAsBytes();
+
+    // Process image (resize + strip EXIF)
+    final processed = ImageUtils.processImage(rawBytes);
+    if (processed == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('이미지를 처리할 수 없습니다'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+      return;
+    }
+
+    // Store processed image in provider
+    ref.read(pendingImageProvider.notifier).state = processed;
+
+    // Navigate to register screen
+    if (context.mounted) {
+      context.push(AppRoutes.wardrobeRegister);
+    }
   }
 }

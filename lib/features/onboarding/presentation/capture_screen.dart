@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/colors.dart';
 
 /// S03: Onboarding capture screen
@@ -9,7 +10,13 @@ class CaptureScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('옷장 시작하기')),
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => context.pop(),
+          icon: const Icon(Icons.arrow_back),
+        ),
+        title: const Text('옷장 시작하기'),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
