@@ -1,6 +1,6 @@
 # Archive Index - 2026-02
 
-> ClosetIQ MVP (F1-F7) PDCA Documents Archive
+> ClosetIQ PDCA Documents Archive
 
 ## Archived Features
 
@@ -13,10 +13,11 @@
 | f6-outfit-recommendation | completed | 96% | plan, design, analysis, report | 2026-02-23 |
 | f7-premium-subscription | completed | 97% | plan, design, analysis, report | 2026-02-23 |
 | comprehensive | - | 96% | full F1-F7 gap analysis | 2026-02-23 |
+| background-removal | completed | 99% | plan, design, analysis, report | 2026-02-24 |
 
 ## Summary
 
-- **Total features archived:** 6 (+ 1 comprehensive analysis)
-- **Overall MVP match rate:** 96%
+- **Total features archived:** 7 (+ 1 comprehensive analysis)
+- **Overall match rate:** 96.6%
 - **Critical issues remaining:** 0
-- **Status:** Production Ready (post-integration verification)
+- **Status:** Production Ready
