@@ -1,12 +1,13 @@
 import 'dart:math';
+import 'dart:ui';
 
 /// HSL representation
-class HSLColor {
+class HslColorData {
   final double h; // 0-360
   final double s; // 0-100
   final double l; // 0-100
 
-  const HSLColor(this.h, this.s, this.l);
+  const HslColorData(this.h, this.s, this.l);
 
   Map<String, int> toJson() => {
         'h': h.round(),
@@ -30,7 +31,7 @@ class ColorUtils {
   }
 
   /// Convert RGB to HSL
-  static HSLColor rgbToHsl(int r, int g, int b) {
+  static HslColorData rgbToHsl(int r, int g, int b) {
     final rf = r / 255.0;
     final gf = g / 255.0;
     final bf = b / 255.0;
@@ -55,11 +56,11 @@ class ColorUtils {
       }
     }
 
-    return HSLColor(h, s * 100, l * 100);
+    return HslColorData(h, s * 100, l * 100);
   }
 
   /// Convert hex to HSL
-  static HSLColor hexToHsl(String hex) {
+  static HslColorData hexToHsl(String hex) {
     final (r, g, b) = hexToRgb(hex);
     return rgbToHsl(r, g, b);
   }
@@ -207,5 +208,11 @@ class ColorUtils {
   static String hexToKoreanName(String hex) {
     final hsl = hexToHsl(hex);
     return getKoreanColorName(hsl.h, hsl.s, hsl.l);
+  }
+
+  /// Convert hex string (#RRGGBB) to Flutter Color
+  static Color hexToColor(String hex) {
+    final h = hex.replaceAll('#', '');
+    return Color(int.parse('FF$h', radix: 16));
   }
 }

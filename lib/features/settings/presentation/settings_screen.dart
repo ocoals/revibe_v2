@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/colors.dart';
+import '../../../core/router/app_router.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../subscription/providers/subscription_provider.dart';
-import '../../subscription/presentation/paywall_screen.dart';
-import '../../subscription/presentation/subscription_manage_screen.dart';
 
 /// S13: Settings / My page
 class SettingsScreen extends ConsumerWidget {
@@ -70,13 +71,9 @@ class SettingsScreen extends ConsumerWidget {
                 label: isPremium ? '구독 관리' : '프리미엄 업그레이드',
                 iconColor: AppColors.premium,
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => isPremium
-                          ? const SubscriptionManageScreen()
-                          : const PaywallScreen(),
-                    ),
-                  );
+                  context.push(isPremium
+                      ? AppRoutes.subscriptionManage
+                      : AppRoutes.paywall);
                 },
               );
             },
@@ -84,9 +81,7 @@ class SettingsScreen extends ConsumerWidget {
           _SettingsTile(
             icon: Icons.calendar_month,
             label: '코디 캘린더',
-            onTap: () {
-              // TODO: Navigate to calendar (Tier 2)
-            },
+            onTap: () => context.push(AppRoutes.dailyRecord),
           ),
           _SettingsTile(
             icon: Icons.notifications_outlined,
@@ -96,12 +91,18 @@ class SettingsScreen extends ConsumerWidget {
           _SettingsTile(
             icon: Icons.lock_outline,
             label: '개인정보처리방침',
-            onTap: () {},
+            onTap: () => launchUrl(
+              Uri.parse('https://closetiq.app/privacy'),
+              mode: LaunchMode.externalApplication,
+            ),
           ),
           _SettingsTile(
             icon: Icons.description_outlined,
             label: '서비스 이용약관',
-            onTap: () {},
+            onTap: () => launchUrl(
+              Uri.parse('https://closetiq.app/terms'),
+              mode: LaunchMode.externalApplication,
+            ),
           ),
           _SettingsTile(
             icon: Icons.info_outline,

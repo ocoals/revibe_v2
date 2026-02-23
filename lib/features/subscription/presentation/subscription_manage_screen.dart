@@ -1,10 +1,12 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/colors.dart';
+import '../../../core/router/app_router.dart';
 import '../data/models/subscription_status.dart';
 import '../providers/subscription_provider.dart';
-import 'paywall_screen.dart';
 
 /// S19: Subscription management screen.
 class SubscriptionManageScreen extends ConsumerWidget {
@@ -58,13 +60,7 @@ class SubscriptionManageScreen extends ConsumerWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const PaywallScreen(),
-                  ),
-                );
-              },
+              onPressed: () => context.push(AppRoutes.paywall),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.premium,
                 foregroundColor: Colors.white,
@@ -177,10 +173,10 @@ class SubscriptionManageScreen extends ConsumerWidget {
   }
 
   Future<void> _openStoreSubscription() async {
-    // iOS: App Store subscription settings
-    // Android: Google Play subscription settings
     final url = Uri.parse(
-      'https://apps.apple.com/account/subscriptions',
+      Platform.isIOS
+          ? 'https://apps.apple.com/account/subscriptions'
+          : 'https://play.google.com/store/account/subscriptions',
     );
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);

@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/router/app_router.dart';
+import '../../../core/utils/date_format_utils.dart';
 import '../data/daily_repository.dart';
 import '../providers/daily_provider.dart';
 import '../providers/daily_record_form_provider.dart';
@@ -51,7 +52,7 @@ class _DailyRecordScreenState extends ConsumerState<DailyRecordScreen> {
   @override
   Widget build(BuildContext context) {
     final formState = ref.watch(dailyRecordFormProvider(widget.initialDate));
-    final dateStr = _formatDateKey(widget.initialDate);
+    final dateStr = DateFormatUtils.formatDateKey(widget.initialDate);
     final existingAsync = ref.watch(outfitByDateProvider(dateStr));
 
     // Load existing data on first build
@@ -282,9 +283,6 @@ class _DailyRecordScreenState extends ConsumerState<DailyRecordScreen> {
     }
   }
 
-  String _formatDateKey(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-  }
 }
 
 class _InputMethodCard extends StatelessWidget {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/colors.dart';
 import '../providers/subscription_provider.dart';
 
@@ -153,9 +154,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextButton(
-                      onPressed: () {
-                        // TODO: Open terms URL
-                      },
+                      onPressed: () => _openUrl('https://closetiq.app/terms'),
                       child: const Text(
                         '이용약관',
                         style: TextStyle(
@@ -168,9 +167,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                     const Text(' | ',
                         style: TextStyle(color: AppColors.textCaption)),
                     TextButton(
-                      onPressed: () {
-                        // TODO: Open privacy URL
-                      },
+                      onPressed: () => _openUrl('https://closetiq.app/privacy'),
                       child: const Text(
                         '개인정보처리방침',
                         style: TextStyle(
@@ -304,6 +301,13 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           const SnackBar(content: Text('복원에 실패했어요. 다시 시도해주세요.')),
         );
       }
+    }
+  }
+
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 

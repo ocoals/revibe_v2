@@ -165,7 +165,7 @@ class ItemRegistrationNotifier extends StateNotifier<ItemRegistrationState> {
     } catch (e) {
       state = state.copyWith(
         isSubmitting: false,
-        error: '등록에 실패했습니다: $e',
+        error: '등록에 실패했습니다. 다시 시도해주세요.',
       );
       return false;
     }

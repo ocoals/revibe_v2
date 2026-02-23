@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/constants/categories.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/router/app_router.dart';
+import '../../../core/utils/color_utils.dart';
 import '../data/models/wardrobe_item.dart';
 import '../providers/wardrobe_provider.dart';
 
@@ -205,7 +206,7 @@ class ItemDetailScreen extends ConsumerWidget {
           width: 20,
           height: 20,
           decoration: BoxDecoration(
-            color: _hexToColor(colorHex),
+            color: ColorUtils.hexToColor(colorHex),
             shape: BoxShape.circle,
             border: Border.all(color: AppColors.divider),
           ),
@@ -271,7 +272,7 @@ class ItemDetailScreen extends ConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('삭제에 실패했습니다: $e'),
+              content: const Text('삭제에 실패했습니다. 다시 시도해주세요.'),
               backgroundColor: AppColors.error,
             ),
           );
@@ -280,8 +281,4 @@ class ItemDetailScreen extends ConsumerWidget {
     }
   }
 
-  static Color _hexToColor(String hex) {
-    final h = hex.replaceAll('#', '');
-    return Color(int.parse('FF$h', radix: 16));
-  }
 }

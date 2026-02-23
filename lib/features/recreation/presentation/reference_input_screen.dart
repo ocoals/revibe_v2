@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/router/app_router.dart';
 import '../providers/recreation_process_provider.dart';
@@ -56,7 +57,7 @@ class _ReferenceInputScreenState extends ConsumerState<ReferenceInputScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
-                    '이번 달 잔여 횟수: $remaining/5회',
+                    '이번 달 잔여 횟수: $remaining/${AppConfig.freeRecreationMonthlyLimit}회',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,

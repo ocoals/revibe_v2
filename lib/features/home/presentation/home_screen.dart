@@ -8,6 +8,13 @@ import '../../recommendation/presentation/widgets/recommended_outfit_card.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  static String _greeting() {
+    final hour = TimeOfDay.now().hour;
+    if (hour < 12) return 'Good Morning';
+    if (hour < 18) return 'Good Afternoon';
+    return 'Good Evening';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +32,7 @@ class HomeScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Good Morning',
+                          _greeting(),
                           style: TextStyle(
                             fontSize: 14,
                             color: AppColors.textCaption,

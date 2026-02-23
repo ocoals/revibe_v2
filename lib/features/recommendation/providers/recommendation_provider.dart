@@ -20,20 +20,16 @@ final todayRecommendationProvider =
   // 2. Get weather (nullable — works without it)
   final weather = await ref.watch(currentWeatherProvider.future);
 
-  // 3. Get recent 7 days of daily outfit records for variety scoring
+  // 3. Get recent 7 days of daily outfit records for variety scoring (batch)
   final dailyRepo = ref.watch(dailyRepositoryProvider);
-  final now = DateTime.now();
   final recentItemIds = <String>[];
   final recentWornCounts = <String, int>{};
 
-  for (var i = 0; i < 7; i++) {
-    final date = now.subtract(Duration(days: i));
-    final detail = await dailyRepo.fetchOutfitWithItems(date: date);
-    if (detail != null) {
-      for (final item in detail.items) {
-        recentItemIds.add(item.id);
-        recentWornCounts[item.id] = (recentWornCounts[item.id] ?? 0) + 1;
-      }
+  final recentOutfits = await dailyRepo.fetchRecentOutfitsWithItems(days: 7);
+  for (final detail in recentOutfits) {
+    for (final item in detail.items) {
+      recentItemIds.add(item.id);
+      recentWornCounts[item.id] = (recentWornCounts[item.id] ?? 0) + 1;
     }
   }
 

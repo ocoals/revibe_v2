@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/colors.dart';
-import '../paywall_screen.dart';
+import '../../../../core/router/app_router.dart';
 
 /// Limit type for the bottom sheet.
 enum LimitType { wardrobe, recreation }
@@ -90,11 +91,7 @@ class LimitReachedSheet extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const PaywallScreen(),
-                  ),
-                );
+                context.push(AppRoutes.paywall);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.premium,

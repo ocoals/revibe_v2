@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../core/utils/color_utils.dart';
 
 /// Fashion color palette data
 class FashionColor {
@@ -55,7 +56,7 @@ class ColorSelector extends StatelessWidget {
       runSpacing: 12,
       children: _fashionColors.map((fc) {
         final isSelected = selectedHex == fc.hex;
-        final color = _hexToColor(fc.hex);
+        final color = ColorUtils.hexToColor(fc.hex);
         final isLight = color.computeLuminance() > 0.7;
 
         return GestureDetector(
@@ -115,8 +116,4 @@ class ColorSelector extends StatelessWidget {
     );
   }
 
-  static Color _hexToColor(String hex) {
-    final h = hex.replaceAll('#', '');
-    return Color(int.parse('FF$h', radix: 16));
-  }
 }

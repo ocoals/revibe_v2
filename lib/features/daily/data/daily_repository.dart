@@ -18,7 +18,8 @@ class DailyRepository {
     required List<String> itemIds,
     String? notes,
   }) async {
-    final userId = _client.auth.currentUser!.id;
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) throw StateError('User not authenticated');
     final dateStr = _formatDate(date);
 
     // 1. Upsert daily_outfits record
@@ -119,6 +120,54 @@ class DailyRepository {
         .toList();
 
     return DailyOutfitDetail(outfit: outfit, items: items);
+  }
+
+  /// Fetch recent N days of outfits with their items in batch (2 queries).
+  Future<List<DailyOutfitDetail>> fetchRecentOutfitsWithItems({
+    int days = 7,
+  }) async {
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return [];
+
+    final now = DateTime.now();
+    final startDate = _formatDate(now.subtract(Duration(days: days)));
+
+    // Query 1: Fetch all outfits in date range
+    final outfitsData = await _client
+        .from(_outfitTable)
+        .select()
+        .eq('user_id', userId)
+        .gte('outfit_date', startDate)
+        .order('outfit_date', ascending: false);
+
+    if (outfitsData.isEmpty) return [];
+
+    final outfits =
+        outfitsData.map((json) => DailyOutfit.fromJson(json)).toList();
+    final outfitIds = outfits.map((o) => o.id).toList();
+
+    // Query 2: Fetch all outfit_items with joined wardrobe_items
+    final itemsData = await _client
+        .from(_itemsTable)
+        .select('outfit_id, position, $_wardrobeTable(*)')
+        .inFilter('outfit_id', outfitIds)
+        .order('position', ascending: true);
+
+    // Group items by outfit_id
+    final itemsByOutfit = <String, List<WardrobeItem>>{};
+    for (final row in itemsData) {
+      final outfitId = row['outfit_id'] as String;
+      final item = WardrobeItem.fromJson(
+          row[_wardrobeTable] as Map<String, dynamic>);
+      itemsByOutfit.putIfAbsent(outfitId, () => []).add(item);
+    }
+
+    return outfits
+        .map((outfit) => DailyOutfitDetail(
+              outfit: outfit,
+              items: itemsByOutfit[outfit.id] ?? [],
+            ))
+        .toList();
   }
 
   /// Delete a daily outfit record.

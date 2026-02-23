@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/categories.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../core/utils/color_utils.dart';
 import '../../data/models/wardrobe_item.dart';
 
 /// Grid tile for wardrobe items with image, category badge, and color dot
@@ -77,7 +78,7 @@ class WardrobeGridItem extends StatelessWidget {
                 width: 16,
                 height: 16,
                 decoration: BoxDecoration(
-                  color: _hexToColor(item.colorHex),
+                  color: ColorUtils.hexToColor(item.colorHex),
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: Colors.white,
@@ -106,8 +107,4 @@ class WardrobeGridItem extends StatelessWidget {
     }
   }
 
-  static Color _hexToColor(String hex) {
-    final h = hex.replaceAll('#', '');
-    return Color(int.parse('FF$h', radix: 16));
-  }
 }

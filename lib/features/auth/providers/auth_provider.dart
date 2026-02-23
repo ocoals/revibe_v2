@@ -9,8 +9,9 @@ final authStateProvider = StreamProvider<Session?>((ref) {
   );
 });
 
-/// Current user
+/// Current user (reactive to auth state changes)
 final currentUserProvider = Provider<User?>((ref) {
+  ref.watch(authStateProvider);
   return SupabaseConfig.client.auth.currentUser;
 });
 

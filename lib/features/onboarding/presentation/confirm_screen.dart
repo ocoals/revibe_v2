@@ -77,7 +77,7 @@ class _ConfirmScreenState extends ConsumerState<ConfirmScreen> {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('저장에 실패했습니다: $e'),
+            content: const Text('저장에 실패했습니다. 다시 시도해주세요.'),
             backgroundColor: AppColors.error,
           ),
         );

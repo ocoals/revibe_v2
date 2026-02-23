@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/router/app_router.dart';
+import '../../../core/utils/date_format_utils.dart';
 import '../data/daily_repository.dart';
 import '../providers/daily_provider.dart';
 
@@ -20,7 +21,7 @@ class CalendarScreen extends ConsumerWidget {
     final monthKey =
         '${focusedMonth.year}-${focusedMonth.month.toString().padLeft(2, '0')}';
     final monthOutfitsAsync = ref.watch(monthlyOutfitsProvider(monthKey));
-    final dateKey = _formatDateKey(selectedDate);
+    final dateKey = DateFormatUtils.formatDateKey(selectedDate);
     final detailAsync = ref.watch(outfitByDateProvider(dateKey));
 
     // Collect dates that have outfits for dot markers
@@ -173,7 +174,7 @@ class CalendarScreen extends ConsumerWidget {
   }
 
   void _navigateToRecord(BuildContext context, DateTime date) {
-    final dateStr = _formatDateKey(date);
+    final dateStr = DateFormatUtils.formatDateKey(date);
     context.push('${AppRoutes.dailyRecordCreate}?date=$dateStr');
   }
 
@@ -205,15 +206,12 @@ class CalendarScreen extends ConsumerWidget {
       // Invalidate providers
       final monthKey =
           '${date.year}-${date.month.toString().padLeft(2, '0')}';
-      final dateKey = _formatDateKey(date);
+      final dateKey = DateFormatUtils.formatDateKey(date);
       ref.invalidate(monthlyOutfitsProvider(monthKey));
       ref.invalidate(outfitByDateProvider(dateKey));
     }
   }
 
-  String _formatDateKey(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-  }
 }
 
 class _EmptyDayView extends StatelessWidget {

@@ -27,7 +27,7 @@ class ResultScreen extends ConsumerWidget {
       ),
       error: (e, _) => Scaffold(
         appBar: AppBar(title: const Text('룩 재현 결과')),
-        body: Center(child: Text('오류가 발생했어요: $e')),
+        body: const Center(child: Text('오류가 발생했어요. 다시 시도해주세요.')),
       ),
       data: (recreation) {
         final score = recreation.overallScore;
@@ -272,9 +272,7 @@ class ResultScreen extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () {
-                        // TODO: Save image (Phase 2)
-                      },
+                      onPressed: null,
                       icon: const Icon(Icons.save_alt),
                       label: const Text('이미지 저장'),
                     ),
@@ -282,9 +280,7 @@ class ResultScreen extends ConsumerWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () {
-                        // TODO: Share (Phase 2)
-                      },
+                      onPressed: null,
                       icon: const Icon(Icons.share),
                       label: const Text('공유하기'),
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/utils/date_format_utils.dart';
 import '../../wardrobe/data/models/wardrobe_item.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
 import 'daily_provider.dart';
@@ -96,8 +97,7 @@ class DailyRecordFormNotifier extends StateNotifier<DailyRecordFormState> {
       // Invalidate calendar and detail providers
       final monthKey =
           '${state.date.year}-${state.date.month.toString().padLeft(2, '0')}';
-      final dateKey =
-          '${state.date.year}-${state.date.month.toString().padLeft(2, '0')}-${state.date.day.toString().padLeft(2, '0')}';
+      final dateKey = DateFormatUtils.formatDateKey(state.date);
       _ref.invalidate(monthlyOutfitsProvider(monthKey));
       _ref.invalidate(outfitByDateProvider(dateKey));
 
