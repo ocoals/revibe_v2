@@ -42,6 +42,7 @@ class _AnalyzingScreenState extends ConsumerState<AnalyzingScreen> {
 
     // Navigate on completion
     ref.listen(recreationProcessProvider, (prev, next) {
+      if (!mounted) return;
       if (next.step == RecreationStep.completed && next.result != null) {
         context.pushReplacement('/recreation/result/${next.result!.id}');
       } else if (next.step == RecreationStep.error) {
@@ -114,7 +115,7 @@ class _AnalyzingScreenState extends ConsumerState<AnalyzingScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.of(context).pop(); // close dialog
               context.pop(); // Back to input
             },
             child: const Text('취소'),
@@ -123,7 +124,7 @@ class _AnalyzingScreenState extends ConsumerState<AnalyzingScreen> {
               errorCode != 'RECREATION_LIMIT_REACHED')
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.of(context).pop(); // close dialog
                 final bytes =
                     ref.read(recreationProcessProvider).imageBytes;
                 if (bytes != null) {
@@ -137,7 +138,7 @@ class _AnalyzingScreenState extends ConsumerState<AnalyzingScreen> {
           if (errorCode == 'NO_FASHION_ITEMS')
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.of(context).pop(); // close dialog
                 context.pop(); // Back to input to pick another image
               },
               child: const Text('다른 이미지 선택'),

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/config/revenuecat_config.dart';
 import '../../../core/config/supabase_config.dart';
 
 /// Stream of auth state changes
@@ -11,8 +12,15 @@ final authStateProvider = StreamProvider<Session?>((ref) {
 
 /// Current user (reactive to auth state changes)
 final currentUserProvider = Provider<User?>((ref) {
-  ref.watch(authStateProvider);
-  return SupabaseConfig.client.auth.currentUser;
+  final session = ref.watch(authStateProvider).valueOrNull;
+  final user = SupabaseConfig.client.auth.currentUser;
+
+  // Sync RevenueCat user identity on login
+  if (session != null && user != null) {
+    RevenueCatConfig.login(user.id);
+  }
+
+  return user;
 });
 
 /// Auth actions
@@ -53,6 +61,7 @@ class AuthService {
 
   /// Sign out
   Future<void> signOut() async {
+    await RevenueCatConfig.logout();
     await _client.auth.signOut();
   }
 }

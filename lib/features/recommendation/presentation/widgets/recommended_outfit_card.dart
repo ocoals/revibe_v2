@@ -4,8 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/utils/date_format_utils.dart';
 import '../../../daily/providers/daily_provider.dart';
 import '../../../wardrobe/data/models/wardrobe_item.dart';
+import '../../../wardrobe/providers/wardrobe_provider.dart';
 import '../../providers/recommendation_provider.dart';
 import '../../data/models/recommendation_result.dart';
 
@@ -194,7 +196,10 @@ class RecommendedOutfitCard extends ConsumerWidget {
       final now = DateTime.now();
       final monthKey =
           '${now.year}-${now.month.toString().padLeft(2, '0')}';
+      final dateKey = DateFormatUtils.formatDateKey(now);
       ref.invalidate(monthlyOutfitsProvider(monthKey));
+      ref.invalidate(outfitByDateProvider(dateKey));
+      ref.invalidate(wardrobeItemsProvider);
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

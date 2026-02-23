@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/constants/colors.dart';
+import '../../../core/router/app_router.dart';
 import '../data/image_url_helper.dart';
 import '../data/models/gap_item.dart';
 import '../providers/recreation_provider.dart';
@@ -202,7 +203,7 @@ class ResultScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
-                          onPressed: () => context.go('/wardrobe/add'),
+                          onPressed: () => context.go(AppRoutes.wardrobeAdd),
                           child: const Text('옷장에 추가하기'),
                         ),
                       ],
