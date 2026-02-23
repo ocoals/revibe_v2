@@ -52,6 +52,24 @@ class WardrobeRepository {
     return _client.storage.from(_bucket).getPublicUrl(path);
   }
 
+  /// Upload processed (background-removed) image as PNG
+  Future<String> uploadProcessedImage(
+    String userId,
+    Uint8List imageBytes,
+    String fileName,
+  ) async {
+    final path = '$userId/$fileName';
+    await _client.storage.from(_bucket).uploadBinary(
+          path,
+          imageBytes,
+          fileOptions: const FileOptions(
+            contentType: 'image/png',
+            upsert: true,
+          ),
+        );
+    return _client.storage.from(_bucket).getPublicUrl(path);
+  }
+
   /// Insert a new wardrobe item
   Future<WardrobeItem> createItem(Map<String, dynamic> data) async {
     final result = await _client.from(_table).insert(data).select().single();

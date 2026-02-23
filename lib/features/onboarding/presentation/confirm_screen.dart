@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/colors.dart';
 import '../../../core/config/supabase_config.dart';
 import '../../../core/router/app_router.dart';
+import '../../../core/services/background_removal_service.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../wardrobe/providers/wardrobe_provider.dart';
 import '../providers/onboarding_analyze_provider.dart';
@@ -32,13 +33,22 @@ class _ConfirmScreenState extends ConsumerState<ConfirmScreen> {
 
     try {
       final repo = ref.read(wardrobeRepositoryProvider);
+      final bgService = ref.read(backgroundRemovalServiceProvider);
       final imageBytes = analyzeState.imageBytes;
 
-      // Upload shared image once
+      // Remove background and upload processed image
       String? imageUrl;
       if (imageBytes != null) {
-        final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-        imageUrl = await repo.uploadImage(user.id, imageBytes, fileName);
+        final bgResult = await bgService.removeBackground(imageBytes);
+        if (bgResult.usedFallback) {
+          final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+          imageUrl = await repo.uploadImage(user.id, bgResult.imageBytes, fileName);
+        } else {
+          final fileName = '${DateTime.now().millisecondsSinceEpoch}_processed.png';
+          imageUrl = await repo.uploadProcessedImage(
+            user.id, bgResult.imageBytes, fileName,
+          );
+        }
       }
 
       // Save each selected item to wardrobe
@@ -123,7 +133,7 @@ class _ConfirmScreenState extends ConsumerState<ConfirmScreen> {
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
-              context.go(AppRoutes.home);
+              if (context.mounted) context.go(AppRoutes.home);
             },
             child: Text(
               '나중에',
@@ -133,7 +143,7 @@ class _ConfirmScreenState extends ConsumerState<ConfirmScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.of(ctx).pop();
-              context.go(AppRoutes.recreation);
+              if (context.mounted) context.go(AppRoutes.recreation);
             },
             child: const Text('룩 재현하기'),
           ),

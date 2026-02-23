@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-02-23T12:46:34.838Z",
+  "lastUpdated": "2026-02-23T14:55:44.170Z",
   "activeFeatures": [
     "_shared",
     "recreate-analyze",
@@ -10,7 +10,9 @@
     "f6-outfit-recommendation",
     "F6 Outfit Recommendation - Gap Analysis",
     "f7-premium-subscription",
-    "F7 Premium Subscription - Gap Analysis"
+    "F7 Premium Subscription - Gap Analysis",
+    "remove-background",
+    "background-removal"
   ],
   "primaryFeature": "f7-premium-subscription",
   "features": {
@@ -180,6 +182,33 @@
       },
       "previousPhase": "check",
       "autoAdvanced": true
+    },
+    "remove-background": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-23T14:50:26.150Z",
+        "lastUpdated": "2026-02-23T14:50:26.150Z"
+      },
+      "lastFile": "/Users/ochaemin/dev/MyApp/supabase/functions/remove-background/index.ts"
+    },
+    "background-removal": {
+      "phase": "act",
+      "phaseNumber": 5,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-23T14:55:44.169Z",
+        "lastUpdated": "2026-02-23T14:55:44.169Z"
+      },
+      "previousPhase": "check",
+      "autoAdvanced": true
     }
   },
   "pipeline": {
@@ -190,7 +219,7 @@
   "session": {
     "startedAt": "2026-02-23T06:00:00.000Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-02-23T12:46:34.838Z"
+    "lastActivity": "2026-02-23T14:55:44.170Z"
   },
   "history": [
     {
@@ -384,6 +413,18 @@
       "feature": "f7-premium-subscription",
       "phase": "report",
       "action": "completed"
+    },
+    {
+      "timestamp": "2026-02-23T14:50:26.150Z",
+      "feature": "remove-background",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-23T14:55:44.170Z",
+      "feature": "background-removal",
+      "phase": "act",
+      "action": "updated"
     }
   ]
 }

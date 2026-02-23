@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/services/background_removal_service.dart';
 import '../../../core/utils/color_utils.dart';
 import '../../auth/providers/auth_provider.dart';
 import 'wardrobe_provider.dart';
@@ -125,11 +126,20 @@ class ItemRegistrationNotifier extends StateNotifier<ItemRegistrationState> {
 
     try {
       final repo = _ref.read(wardrobeRepositoryProvider);
+      final bgService = _ref.read(backgroundRemovalServiceProvider);
 
-      // Upload image
-      final fileName =
-          '${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final imageUrl = await repo.uploadImage(user.id, imageBytes, fileName);
+      // Remove background, then upload
+      final bgResult = await bgService.removeBackground(imageBytes);
+      final String imageUrl;
+      if (bgResult.usedFallback) {
+        final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+        imageUrl = await repo.uploadImage(user.id, bgResult.imageBytes, fileName);
+      } else {
+        final fileName = '${DateTime.now().millisecondsSinceEpoch}_processed.png';
+        imageUrl = await repo.uploadProcessedImage(
+          user.id, bgResult.imageBytes, fileName,
+        );
+      }
 
       // Get Korean color name from hex
       final colorName = ColorUtils.hexToKoreanName(state.colorHex!);
