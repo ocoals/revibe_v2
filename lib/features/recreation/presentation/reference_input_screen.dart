@@ -24,9 +24,9 @@ class _ReferenceInputScreenState extends ConsumerState<ReferenceInputScreen> {
   Future<void> _pickImage() async {
     final xFile = await _picker.pickImage(
       source: ImageSource.gallery,
-      maxWidth: 2048,
-      maxHeight: 2048,
-      imageQuality: 85,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      imageQuality: 70,
     );
     if (xFile == null) return;
 
@@ -46,7 +46,7 @@ class _ReferenceInputScreenState extends ConsumerState<ReferenceInputScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('룩 재현')),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [

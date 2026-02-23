@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/constants/colors.dart';
+import '../data/image_url_helper.dart';
 import '../data/models/gap_item.dart';
 import '../providers/recreation_provider.dart';
 import 'widgets/matched_item_card.dart';
@@ -85,7 +86,7 @@ class ResultScreen extends ConsumerWidget {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: CachedNetworkImage(
-                              imageUrl: recreation.referenceImageUrl,
+                              imageUrl: resolveReferenceImageUrl(recreation.referenceImageUrl),
                               height: 220,
                               width: double.infinity,
                               fit: BoxFit.cover,

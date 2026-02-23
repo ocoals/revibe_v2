@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/colors.dart';
+import '../../data/image_url_helper.dart';
 import '../../data/models/look_recreation.dart';
 
 class RecreationHistoryCard extends StatelessWidget {
@@ -36,7 +37,7 @@ class RecreationHistoryCard extends StatelessWidget {
             ClipRRect(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               child: CachedNetworkImage(
-                imageUrl: recreation.referenceImageUrl,
+                imageUrl: resolveReferenceImageUrl(recreation.referenceImageUrl),
                 width: 140,
                 height: 140,
                 fit: BoxFit.cover,

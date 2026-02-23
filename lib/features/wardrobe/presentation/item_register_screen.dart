@@ -35,9 +35,9 @@ class ItemRegisterScreen extends ConsumerWidget {
     final notifier = ref.read(itemRegistrationProvider.notifier);
 
     if (imageBytes == null) {
-      // No image, go back
+      // No image, navigate to wardrobe
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) context.pop();
+        if (context.mounted) context.go(AppRoutes.wardrobe);
       });
       return const Scaffold(body: SizedBox.shrink());
     }

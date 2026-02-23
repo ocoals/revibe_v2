@@ -45,6 +45,7 @@ class _AnalyzingScreenState extends ConsumerState<AnalyzingScreen> {
       if (next.step == RecreationStep.completed && next.result != null) {
         context.pushReplacement('/recreation/result/${next.result!.id}');
       } else if (next.step == RecreationStep.error) {
+        debugPrint('Recreation error: ${next.errorCode} - ${next.errorMessage}');
         _showErrorDialog(next.errorCode, next.errorMessage);
       }
     });
@@ -75,21 +76,25 @@ class _AnalyzingScreenState extends ConsumerState<AnalyzingScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                _AnalysisStep(
-                  label: '아이템 감지 완료',
-                  isDone: _fakeStep >= 1 ||
-                      processState.step.index >= RecreationStep.analyzing.index,
-                ),
-                const SizedBox(height: 12),
-                _AnalysisStep(
-                  label: '색상/스타일 분석 완료',
-                  isDone: _fakeStep >= 2 ||
-                      processState.step.index >= RecreationStep.matching.index,
-                ),
-                const SizedBox(height: 12),
-                _AnalysisStep(
-                  label: '내 옷장에서 매칭 중...',
-                  isDone: processState.step == RecreationStep.completed,
+                _AnalysisStepList(
+                  steps: [
+                    (
+                      label: '아이템 감지 완료',
+                      isDone: _fakeStep >= 1 ||
+                          processState.step.index >=
+                              RecreationStep.analyzing.index,
+                    ),
+                    (
+                      label: '색상/스타일 분석 완료',
+                      isDone: _fakeStep >= 2 ||
+                          processState.step.index >=
+                              RecreationStep.matching.index,
+                    ),
+                    (
+                      label: '내 옷장에서 매칭 중...',
+                      isDone: processState.step == RecreationStep.completed,
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -160,31 +165,46 @@ class _AnalyzingScreenState extends ConsumerState<AnalyzingScreen> {
   }
 }
 
-class _AnalysisStep extends StatelessWidget {
-  const _AnalysisStep({required this.label, required this.isDone});
+class _AnalysisStepList extends StatelessWidget {
+  const _AnalysisStepList({required this.steps});
 
-  final String label;
-  final bool isDone;
+  final List<({String label, bool isDone})> steps;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          isDone ? Icons.check_circle : Icons.radio_button_unchecked,
-          color: isDone ? AppColors.success : AppColors.textCaption,
-          size: 20,
-        ),
-        const SizedBox(width: 8),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            color: isDone ? AppColors.textTitle : AppColors.textCaption,
-            fontWeight: isDone ? FontWeight.w500 : FontWeight.w400,
+        for (var i = 0; i < steps.length; i++) ...[
+          if (i > 0) const SizedBox(height: 12),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                steps[i].isDone
+                    ? Icons.check_circle
+                    : Icons.radio_button_unchecked,
+                color: steps[i].isDone
+                    ? AppColors.success
+                    : AppColors.textCaption,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                steps[i].label,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: steps[i].isDone
+                      ? AppColors.textTitle
+                      : AppColors.textCaption,
+                  fontWeight:
+                      steps[i].isDone ? FontWeight.w500 : FontWeight.w400,
+                ),
+              ),
+            ],
           ),
-        ),
+        ],
       ],
     );
   }

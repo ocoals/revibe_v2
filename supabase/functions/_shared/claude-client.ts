@@ -1,7 +1,7 @@
 const CLAUDE_API_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-haiku-4-5-20251001";
 const MAX_TOKENS = 1024;
-const TIMEOUT_MS = 10_000;
+const TIMEOUT_MS = 15_000;
 const MAX_RETRIES = 2;
 
 const ANALYSIS_PROMPT = `이 사진에 보이는 패션 아이템을 분석해주세요.
@@ -56,6 +56,9 @@ export async function analyzeReference(imageBase64: string): Promise<ReferenceAn
   const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set");
 
+  const mediaType = detectMediaType(imageBase64);
+  console.log(`[Claude] Detected media type: ${mediaType}, data length: ${imageBase64.length}`);
+
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
@@ -84,7 +87,7 @@ export async function analyzeReference(imageBase64: string): Promise<ReferenceAn
               content: [
                 {
                   type: "image",
-                  source: { type: "base64", media_type: "image/jpeg", data: imageBase64 },
+                  source: { type: "base64", media_type: mediaType, data: imageBase64 },
                 },
                 { type: "text", text: ANALYSIS_PROMPT },
               ],
@@ -97,7 +100,9 @@ export async function analyzeReference(imageBase64: string): Promise<ReferenceAn
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`Claude API error: ${response.status}`);
+        const errBody = await response.text();
+        console.error(`Claude API ${response.status}:`, errBody);
+        throw new Error(`Claude API error: ${response.status} - ${errBody}`);
       }
 
       const result = await response.json();
@@ -146,4 +151,17 @@ function parseAndValidate(text: string): ReferenceAnalysisResult {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
+}
+
+function detectMediaType(base64: string): string {
+  // JPEG: starts with FF D8 FF → base64 "/9j/"
+  if (base64.startsWith("/9j/")) return "image/jpeg";
+  // PNG: starts with 89 50 4E 47 → base64 "iVBOR"
+  if (base64.startsWith("iVBOR")) return "image/png";
+  // GIF: starts with 47 49 46 → base64 "R0lG"
+  if (base64.startsWith("R0lG")) return "image/gif";
+  // WebP: starts with 52 49 46 46 → base64 "UklGR"
+  if (base64.startsWith("UklGR")) return "image/webp";
+  // Default to JPEG
+  return "image/jpeg";
 }

@@ -8,7 +8,7 @@ class SupabaseConfig {
 
   static const String anonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
-    defaultValue: '',
+    defaultValue: 'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH',
   );
 
   static Future<void> initialize() async {

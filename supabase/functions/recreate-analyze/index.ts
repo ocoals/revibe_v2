@@ -18,40 +18,53 @@ serve(async (req: Request) => {
   }
 
   try {
-    // 1. Auth
+    console.log("[1/13] Auth check...");
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return errorResponse(401, "AUTH_REQUIRED", "Authorization required");
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } }
-    );
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY") || Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    console.log(`[1/13] URL=${supabaseUrl}, keyPrefix=${supabaseKey?.substring(0, 15)}...`);
+
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
-      return errorResponse(401, "AUTH_REQUIRED", "Invalid token");
+      console.error("[1/13] Auth failed:", authError?.message);
+      return errorResponse(401, "AUTH_REQUIRED", `Invalid token: ${authError?.message || "no user"}`);
     }
+    console.log(`[1/13] Auth OK: user=${user.id}`);
 
     // 2. Parse request body
+    console.log("[2/13] Parsing body...");
     const body = await req.json();
     const imageBase64: string = body.image_base64;
     if (!imageBase64) {
       return errorResponse(400, "INVALID_IMAGE", "image_base64 is required");
     }
+    console.log(`[2/13] Image size: ${imageBase64.length} chars`);
 
     // 3. Check usage limit
+    console.log("[3/13] Checking usage...");
     const monthKey = getCurrentMonthKey();
     const usage = await getOrCreateUsage(supabase, user.id, monthKey);
+    if (!usage) {
+      console.error("[3/13] Failed to get/create usage record");
+      return errorResponse(500, "INTERNAL_ERROR", "Failed to initialize usage counter");
+    }
+    console.log(`[3/13] Usage: ${usage.recreation_count}/${FREE_RECREATION_LIMIT}`);
     if (usage.recreation_count >= FREE_RECREATION_LIMIT) {
       return errorResponse(403, "RECREATION_LIMIT_REACHED",
         "Monthly free recreation limit reached");
     }
 
     // 4. Create pending record
-    const { data: pendingRecord } = await supabase
+    console.log("[4/13] Creating pending record...");
+    const { data: pendingRecord, error: insertError } = await supabase
       .from("look_recreations")
       .insert({
         user_id: user.id,
@@ -61,48 +74,69 @@ serve(async (req: Request) => {
       })
       .select()
       .single();
+    if (insertError || !pendingRecord) {
+      console.error("[4/13] Insert failed:", insertError?.message);
+      return errorResponse(500, "INTERNAL_ERROR", `DB insert failed: ${insertError?.message}`);
+    }
+    console.log(`[4/13] Record created: ${pendingRecord.id}`);
 
     // 5. Upload reference image to storage
+    console.log("[5/13] Uploading image...");
     const imageBuffer = base64ToUint8Array(imageBase64);
     const imagePath = `${user.id}/${pendingRecord.id}.jpg`;
-    await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from("reference-images")
       .upload(imagePath, imageBuffer, { contentType: "image/jpeg", upsert: true });
-    const referenceImageUrl = supabase.storage
-      .from("reference-images")
-      .getPublicUrl(imagePath).data.publicUrl;
+    if (uploadError) {
+      console.error("[5/13] Upload failed:", uploadError.message);
+    }
+    // Store the path, not the full URL (internal Docker URL is not accessible from client)
+    const referenceImageUrl = imagePath;
+    console.log(`[5/13] Upload done, path: ${referenceImageUrl}`);
 
     // 6. Call Claude Haiku API
+    console.log("[6/13] Calling Claude API...");
+    const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
+    console.log(`[6/13] API key present: ${!!apiKey}, prefix: ${apiKey?.substring(0, 10)}...`);
     const referenceAnalysis = await analyzeReference(imageBase64);
+    console.log(`[6/13] Claude OK: ${referenceAnalysis.items?.length} items detected`);
 
     // 7. Validate analysis
     if (!referenceAnalysis.items || referenceAnalysis.items.length === 0) {
+      console.log("[7/13] No fashion items found");
       await updateRecordFailed(supabase, pendingRecord.id);
       return errorResponse(422, "NO_FASHION_ITEMS",
         "No fashion items detected in image");
     }
+    console.log(`[7/13] Validation OK: ${referenceAnalysis.items.length} items`);
 
     // 8. Fetch user's wardrobe items
+    console.log("[8/13] Fetching wardrobe...");
     const { data: wardrobeItems } = await supabase
       .from("wardrobe_items")
       .select("*")
       .eq("user_id", user.id)
       .eq("is_active", true);
+    console.log(`[8/13] Wardrobe: ${wardrobeItems?.length || 0} items`);
 
     // 9. Run matching engine
+    console.log("[9/13] Matching...");
     const { matchedItems, gapItems, overallScore } = matchItems(
       referenceAnalysis.items,
       wardrobeItems || []
     );
+    console.log(`[9/13] Match: ${matchedItems.length} matched, ${gapItems.length} gaps, score=${overallScore}`);
 
     // 10. Generate deeplinks for gap items
+    console.log("[10/13] Generating deeplinks...");
     const gapItemsWithLinks = gapItems.map((item) => ({
       ...item,
       deeplinks: generateDeeplinks(item.search_keywords),
     }));
 
     // 11. Update record to completed
-    const { data: result } = await supabase
+    console.log("[11/13] Updating record...");
+    const { data: result, error: updateError } = await supabase
       .from("look_recreations")
       .update({
         reference_image_url: referenceImageUrl,
@@ -115,8 +149,13 @@ serve(async (req: Request) => {
       .eq("id", pendingRecord.id)
       .select()
       .single();
+    if (updateError) {
+      console.error("[11/13] Update failed:", updateError.message);
+    }
+    console.log("[11/13] Record updated");
 
     // 12. Increment usage counter
+    console.log("[12/13] Incrementing usage...");
     await supabase
       .from("usage_counters")
       .update({ recreation_count: usage.recreation_count + 1 })
@@ -124,14 +163,15 @@ serve(async (req: Request) => {
       .eq("month_key", monthKey);
 
     // 13. Return result
+    console.log("[13/13] Done! Returning result");
     return new Response(JSON.stringify(result), {
       headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
       status: 200,
     });
 
   } catch (err) {
-    console.error("recreate-analyze error:", err);
-    return errorResponse(500, "INTERNAL_ERROR", "Internal server error");
+    console.error("recreate-analyze CRASH:", err);
+    return errorResponse(500, "INTERNAL_ERROR", `Internal server error: ${String(err)}`);
   }
 });
 

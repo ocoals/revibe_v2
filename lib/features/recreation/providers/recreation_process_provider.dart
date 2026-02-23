@@ -1,3 +1,4 @@
+import 'dart:developer' as dev;
 import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/models/look_recreation.dart';
@@ -75,6 +76,7 @@ class RecreationProcessNotifier extends StateNotifier<RecreationProcessState> {
       // Call Edge Function (handles upload + AI + matching internally)
       final result = await repo.analyze(imageBytes);
 
+      if (!mounted) return;
       state = state.copyWith(
         step: RecreationStep.completed,
         result: result,
@@ -87,12 +89,16 @@ class RecreationProcessNotifier extends StateNotifier<RecreationProcessState> {
       _ref.invalidate(recreationHistoryProvider);
 
     } on RecreationException catch (e) {
+      dev.log('RecreationException: ${e.code} - ${e.message}', name: 'RECREATION');
+      if (!mounted) return;
       state = state.copyWith(
         step: RecreationStep.error,
         errorCode: e.code,
         errorMessage: e.message,
       );
-    } catch (e) {
+    } catch (e, st) {
+      dev.log('UNKNOWN_ERROR: $e\n$st', name: 'RECREATION');
+      if (!mounted) return;
       state = state.copyWith(
         step: RecreationStep.error,
         errorCode: 'UNKNOWN_ERROR',
@@ -107,7 +113,7 @@ class RecreationProcessNotifier extends StateNotifier<RecreationProcessState> {
   }
 }
 
-final recreationProcessProvider = StateNotifierProvider.autoDispose<
+final recreationProcessProvider = StateNotifierProvider<
     RecreationProcessNotifier, RecreationProcessState>(
   (ref) => RecreationProcessNotifier(ref),
 );
