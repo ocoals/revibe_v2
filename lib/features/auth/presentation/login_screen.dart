@@ -1,5 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../core/config/app_config.dart';
 import '../../../core/constants/colors.dart';
 import '../providers/auth_provider.dart';
 
@@ -300,13 +303,41 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 8),
 
                 // Terms
-                Text(
-                  '시작하면 이용약관과 개인정보처리방침에 동의합니다',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textCaption,
-                  ),
+                RichText(
                   textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textCaption,
+                    ),
+                    children: [
+                      const TextSpan(text: '시작하면 '),
+                      TextSpan(
+                        text: '이용약관',
+                        style: const TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => launchUrl(
+                                Uri.parse(AppConfig.termsOfServiceUrl),
+                                mode: LaunchMode.externalApplication,
+                              ),
+                      ),
+                      const TextSpan(text: '과 '),
+                      TextSpan(
+                        text: '개인정보처리방침',
+                        style: const TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => launchUrl(
+                                Uri.parse(AppConfig.privacyPolicyUrl),
+                                mode: LaunchMode.externalApplication,
+                              ),
+                      ),
+                      const TextSpan(text: '에 동의합니다'),
+                    ],
+                  ),
                 ),
 
                 const Spacer(),

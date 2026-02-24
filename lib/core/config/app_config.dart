@@ -14,4 +14,8 @@ class AppConfig {
   // API timeouts
   static const Duration apiTimeout = Duration(seconds: 10);
   static const Duration imageUploadTimeout = Duration(seconds: 30);
+
+  // Legal URLs (GitHub Pages에 배포 후 실제 URL로 교체)
+  static const String privacyPolicyUrl = 'https://ocoals.github.io/revibe_v2/privacy.html';
+  static const String termsOfServiceUrl = 'https://ocoals.github.io/revibe_v2/terms.html';
 }
