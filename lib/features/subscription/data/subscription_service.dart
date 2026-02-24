@@ -8,6 +8,7 @@ class SubscriptionService {
 
   /// Get current subscription info from RevenueCat.
   Future<SubscriptionInfo> getSubscriptionInfo() async {
+    if (!RevenueCatConfig.isConfigured) return SubscriptionInfo.free;
     try {
       final customerInfo = await Purchases.getCustomerInfo();
       return _parseCustomerInfo(customerInfo);
@@ -18,6 +19,7 @@ class SubscriptionService {
 
   /// Stream of subscription changes (listen for real-time updates).
   Stream<SubscriptionInfo> get subscriptionStream {
+    if (!RevenueCatConfig.isConfigured) return const Stream.empty();
     _controller ??= StreamController<SubscriptionInfo>.broadcast(
       onListen: () {
         Purchases.addCustomerInfoUpdateListener(_onCustomerInfoUpdate);
@@ -35,17 +37,20 @@ class SubscriptionService {
 
   /// Fetch available offerings (products + prices).
   Future<Offerings> getOfferings() async {
+    if (!RevenueCatConfig.isConfigured) return const Offerings({});
     return Purchases.getOfferings();
   }
 
   /// Purchase a package (triggers native payment sheet).
   Future<SubscriptionInfo> purchase(Package package) async {
+    if (!RevenueCatConfig.isConfigured) return SubscriptionInfo.free;
     final customerInfo = await Purchases.purchasePackage(package);
     return _parseCustomerInfo(customerInfo);
   }
 
   /// Restore previous purchases (required by Apple).
   Future<SubscriptionInfo> restorePurchases() async {
+    if (!RevenueCatConfig.isConfigured) return SubscriptionInfo.free;
     final customerInfo = await Purchases.restorePurchases();
     return _parseCustomerInfo(customerInfo);
   }

@@ -1,3 +1,9 @@
+# Run scripts (contain API keys)
+run_*.sh
+
+# MCP config (contains API keys)
+.mcp.json
+
 # Miscellaneous
 *.class
 *.log

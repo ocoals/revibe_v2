@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/constants/categories.dart';
@@ -9,7 +10,7 @@ import '../../subscription/providers/subscription_provider.dart';
 import '../providers/wardrobe_provider.dart';
 import 'widgets/wardrobe_grid_item.dart';
 
-/// S06: Wardrobe Grid
+/// Wardrobe screen — Instagram-inspired
 class WardrobeScreen extends ConsumerWidget {
   const WardrobeScreen({super.key});
 
@@ -18,172 +19,170 @@ class WardrobeScreen extends ConsumerWidget {
     final selectedCategory = ref.watch(wardrobeCategoryFilterProvider);
     final itemsAsync = ref.watch(wardrobeItemsProvider);
     final countAsync = ref.watch(wardrobeCountProvider);
+    final isPremium = ref.watch(isPremiumProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('옷장'),
-        actions: [
-          IconButton(
-            onPressed: () => context.push(AppRoutes.wardrobeAdd),
-            icon: const Icon(Icons.add),
-          ),
-        ],
-      ),
+      backgroundColor: AppColors.background,
       body: Column(
         children: [
-          // Category filter chips
-          SizedBox(
-            height: 48,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    label: Text(
-                      '전체',
-                      style: TextStyle(
-                        color: selectedCategory == null
-                            ? Colors.white
-                            : AppColors.textBody,
-                      ),
-                    ),
-                    selected: selectedCategory == null,
-                    selectedColor: AppColors.primary,
-                    backgroundColor: AppColors.chipInactive,
-                    checkmarkColor: Colors.white,
-                    side: BorderSide(
-                      color: selectedCategory == null
-                          ? AppColors.primary
-                          : AppColors.divider,
-                    ),
-                    onSelected: (_) => ref
-                        .read(wardrobeCategoryFilterProvider.notifier)
-                        .state = null,
-                  ),
-                ),
-                ...ItemCategory.values.map((category) {
-                  final isSelected = selectedCategory == category;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: FilterChip(
-                      label: Text(
-                        category.korean,
+          // Header — Instagram style (white bg, extends behind status bar)
+          Container(
+            color: Colors.white,
+            padding: EdgeInsets.fromLTRB(
+                16, MediaQuery.of(context).padding.top + 8, 16, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // R logo + two dots + title
+                  Row(
+                    children: [
+                      const Text(
+                        'R',
                         style: TextStyle(
-                          color: isSelected
-                              ? Colors.white
-                              : AppColors.textBody,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primary,
+                          fontFamily: 'Georgia',
                         ),
                       ),
-                      selected: isSelected,
-                      selectedColor: AppColors.primary,
-                      backgroundColor: AppColors.chipInactive,
-                      checkmarkColor: Colors.white,
-                      side: BorderSide(
-                        color: isSelected
-                            ? AppColors.primary
-                            : AppColors.divider,
+                      const SizedBox(width: 3),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 1),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 4.5,
+                              height: 4.5,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            const SizedBox(height: 2.5),
+                            Container(
+                              width: 4.5,
+                              height: 4.5,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.primary
+                                    .withValues(alpha: 0.35),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      onSelected: (_) => ref
+                      const SizedBox(width: 6),
+                      const Text(
+                        '내 옷장',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textTitle,
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Item count
+                  countAsync.when(
+                    data: (count) => Text(
+                      isPremium ? '$count' : '$count/${AppConfig.freeWardrobeLimit}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textCaption,
+                      ),
+                    ),
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, _) => const SizedBox.shrink(),
+                  ),
+                ],
+              ),
+            ),
+
+            // Story-like category row with counts
+            Container(
+              color: Colors.white,
+              child: SizedBox(
+                height: 110,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 12),
+                  children: [
+                    _CategoryCircle(
+                      label: '전체',
+                      count: countAsync.valueOrNull ?? 0,
+                      isSelected: selectedCategory == null,
+                      onTap: () => ref
                           .read(wardrobeCategoryFilterProvider.notifier)
-                          .state = category,
+                          .state = null,
+                    ),
+                    ...ItemCategory.values.map((category) {
+                      return _CategoryCircle(
+                        label: category.korean,
+                        count: 0, // Will show from filtered data
+                        isSelected: selectedCategory == category,
+                        onTap: () => ref
+                            .read(wardrobeCategoryFilterProvider.notifier)
+                            .state = category,
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ),
+
+            // Masonry grid
+            Expanded(
+              child: itemsAsync.when(
+                data: (items) {
+                  if (items.isEmpty) {
+                    return _buildEmptyState(context);
+                  }
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      ref.invalidate(wardrobeItemsProvider);
+                      ref.invalidate(wardrobeCountProvider);
+                    },
+                    child: MasonryGridView.count(
+                      padding: const EdgeInsets.all(3),
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 3,
+                      crossAxisSpacing: 3,
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        return WardrobeGridItem(
+                          item: item,
+                          height: index % 3 == 0 ? 180.0 : (index % 3 == 1 ? 140.0 : 165.0),
+                          onTap: () => context.push(
+                            '/wardrobe/${item.id}',
+                          ),
+                        );
+                      },
                     ),
                   );
-                }),
-              ],
-            ),
-          ),
-
-          // Free tier progress bar (hidden for premium users)
-          if (!ref.watch(isPremiumProvider))
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: countAsync.when(
-                data: (count) => _buildProgressBar(count),
-                loading: () => _buildProgressBar(0),
-                error: (_, _) => _buildProgressBar(0),
-              ),
-            ),
-
-          // Item grid
-          Expanded(
-            child: itemsAsync.when(
-              data: (items) {
-                if (items.isEmpty) {
-                  return _buildEmptyState(context);
-                }
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    ref.invalidate(wardrobeItemsProvider);
-                    ref.invalidate(wardrobeCountProvider);
-                  },
-                  child: GridView.builder(
-                    padding: const EdgeInsets.all(16),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 0.75,
-                    ),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      final item = items[index];
-                      return WardrobeGridItem(
-                        item: item,
-                        onTap: () => context.push(
-                          '/wardrobe/${item.id}',
-                        ),
-                      );
-                    },
-                  ),
-                );
-              },
-              loading: () => _buildLoadingGrid(),
-              error: (error, _) => _buildErrorState(context, ref, error),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProgressBar(int count) {
-    final limit = AppConfig.freeWardrobeLimit;
-    final ratio = count / limit;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '무료 한도',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textCaption,
-              ),
-            ),
-            Text(
-              '$count / $limit벌',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textCaption,
+                },
+                loading: () => _buildLoadingGrid(),
+                error: (error, _) => _buildErrorState(context, ref, error),
               ),
             ),
           ],
-        ),
-        const SizedBox(height: 4),
-        LinearProgressIndicator(
-          value: ratio.clamp(0.0, 1.0),
-          backgroundColor: AppColors.divider,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            ratio >= 1.0 ? AppColors.error : AppColors.primary,
+      ),
+      // FAB — 48x48, borderRadius 14
+      floatingActionButton: SizedBox(
+        width: 48,
+        height: 48,
+        child: FloatingActionButton(
+          onPressed: () => context.push(AppRoutes.wardrobeAdd),
+          backgroundColor: AppColors.primary,
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
           ),
-          borderRadius: BorderRadius.circular(4),
+          child: const Icon(Icons.add, color: Colors.white, size: 20),
         ),
-      ],
+      ),
     );
   }
 
@@ -194,11 +193,11 @@ class WardrobeScreen extends ConsumerWidget {
         children: [
           Icon(
             Icons.checkroom,
-            size: 64,
+            size: 48,
             color: AppColors.textCaption.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             '아직 등록된 옷이 없어요',
             style: TextStyle(
               fontSize: 16,
@@ -207,7 +206,7 @@ class WardrobeScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             '오늘 입은 옷을 찍어서 시작해보세요',
             style: TextStyle(
               fontSize: 14,
@@ -226,20 +225,15 @@ class WardrobeScreen extends ConsumerWidget {
   }
 
   Widget _buildLoadingGrid() {
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 0.75,
-      ),
-      itemCount: 9,
+    return MasonryGridView.count(
+      padding: const EdgeInsets.all(3),
+      crossAxisCount: 2,
+      mainAxisSpacing: 3,
+      crossAxisSpacing: 3,
+      itemCount: 6,
       itemBuilder: (context, index) => Container(
-        decoration: BoxDecoration(
-          color: AppColors.chipInactive,
-          borderRadius: BorderRadius.circular(12),
-        ),
+        height: index % 3 == 0 ? 180 : (index % 3 == 1 ? 140 : 165),
+        color: AppColors.chipInactive,
       ),
     );
   }
@@ -249,13 +243,9 @@ class WardrobeScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.error_outline,
-            size: 48,
-            color: AppColors.error,
-          ),
+          const Icon(Icons.error_outline, size: 48, color: AppColors.error),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             '데이터를 불러올 수 없습니다',
             style: TextStyle(
               fontSize: 16,
@@ -273,6 +263,80 @@ class WardrobeScreen extends ConsumerWidget {
             label: const Text('다시 시도'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Story-style category circle with count number
+class _CategoryCircle extends StatelessWidget {
+  const _CategoryCircle({
+    required this.label,
+    required this.count,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final String label;
+  final int count;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 14),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Outer ring
+            Container(
+              width: 56,
+              height: 56,
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isSelected ? AppColors.primary : AppColors.divider,
+                  width: 2,
+                ),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isSelected
+                      ? AppColors.primaryLight
+                      : AppColors.background,
+                ),
+                child: Center(
+                  child: Text(
+                    '$count',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.textCaption,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected
+                    ? AppColors.textTitle
+                    : AppColors.textCaption,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

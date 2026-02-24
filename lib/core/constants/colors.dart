@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// ClosetIQ Design System Colors
-/// Based on UI/UX Design Document Section 6.1
+/// RE:VIBE Design System Colors
 class AppColors {
   AppColors._();
 
@@ -10,6 +9,7 @@ class AppColors {
   static const Color primaryHover = Color(0xFF4338CA);   // Indigo 700
   static const Color primaryLight = Color(0xFFEEF2FF);   // Indigo 50
   static const Color primaryText = Color(0xFF4338CA);    // Indigo 700
+  static const Color violet = Color(0xFF7C3AED);         // Violet 600
 
   // Semantic (Status)
   static const Color success = Color(0xFF10B981);        // Emerald 500
@@ -18,17 +18,19 @@ class AppColors {
   static const Color premium = Color(0xFF9333EA);        // Purple 600
 
   // Neutral (Text / Background)
-  static const Color textTitle = Color(0xFF1E293B);      // Slate 800
-  static const Color textBody = Color(0xFF475569);       // Slate 600
-  static const Color textCaption = Color(0xFF94A3B8);    // Slate 400
-  static const Color background = Color(0xFFF8FAFC);     // Slate 50
+  static const Color textTitle = Color(0xFF262626);      // ink
+  static const Color textBody = Color(0xFF555555);       // sec
+  static const Color textCaption = Color(0xFF8E8E8E);    // ter
+  static const Color mute = Color(0xFFC7C7CC);           // mute
+  static const Color background = Color(0xFFFAFAFA);     // bg
   static const Color cardBackground = Color(0xFFFFFFFF); // White
-  static const Color divider = Color(0xFFE2E8F0);        // Slate 200
+  static const Color divider = Color(0xFFEFEFEF);        // line
+  static const Color lineDark = Color(0xFFDBDBDB);       // lineDark
 
   // Chip
   static const Color chipActive = primary;
-  static const Color chipInactive = Color(0xFFF1F5F9);   // Slate 100
-  static const Color chipInactiveText = Color(0xFF475569);// Slate 600
+  static const Color chipInactive = Color(0xFFF5F5F5);   // Neutral 100
+  static const Color chipInactiveText = Color(0xFF555555);
 
   // Tag
   static const Color tagBackground = Color(0xFFECFDF5);  // Emerald 50

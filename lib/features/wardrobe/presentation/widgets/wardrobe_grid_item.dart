@@ -1,93 +1,89 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/categories.dart';
-import '../../../../core/constants/colors.dart';
 import '../../../../core/utils/color_utils.dart';
 import '../../data/models/wardrobe_item.dart';
 
-/// Grid tile for wardrobe items with image, category badge, and color dot
+/// Masonry grid tile — no border radius, gradient overlay with category + name
 class WardrobeGridItem extends StatelessWidget {
   const WardrobeGridItem({
     super.key,
     required this.item,
     required this.onTap,
+    this.height = 180,
   });
 
   final WardrobeItem item;
   final VoidCallback onTap;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+      child: SizedBox(
+        height: height,
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Image with shimmer loading
+            // Background color fallback
+            Container(color: ColorUtils.hexToColor(item.colorHex)),
+
+            // Image
             CachedNetworkImage(
               imageUrl: item.imageUrl,
               fit: BoxFit.cover,
               placeholder: (context, url) => Container(
-                color: AppColors.chipInactive,
-                child: const Center(
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                ),
+                color: ColorUtils.hexToColor(item.colorHex),
               ),
               errorWidget: (context, url, error) => Container(
-                color: AppColors.chipInactive,
+                color: ColorUtils.hexToColor(item.colorHex),
                 child: const Icon(
                   Icons.broken_image_outlined,
-                  color: AppColors.textCaption,
+                  color: Colors.white54,
                 ),
               ),
             ),
 
-            // Category badge (top-left)
+            // Bottom gradient overlay with category + name
             Positioned(
-              top: 6,
-              left: 6,
+              left: 0,
+              right: 0,
+              bottom: 0,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: const EdgeInsets.fromLTRB(10, 20, 10, 8),
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.6),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  _categoryLabel(item.category),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.4),
+                    ],
                   ),
                 ),
-              ),
-            ),
-
-            // Color dot (bottom-right)
-            Positioned(
-              bottom: 6,
-              right: 6,
-              child: Container(
-                width: 16,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: ColorUtils.hexToColor(item.colorHex),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: 2,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _categoryLabel(item.category),
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.6),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      item.subcategory ?? _categoryLabel(item.category),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -106,5 +102,4 @@ class WardrobeGridItem extends StatelessWidget {
       return category;
     }
   }
-
 }

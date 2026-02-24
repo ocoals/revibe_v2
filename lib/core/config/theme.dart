@@ -24,13 +24,14 @@ class AppTheme {
 
       // AppBar
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         foregroundColor: AppColors.textTitle,
         elevation: 0,
-        centerTitle: true,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
         titleTextStyle: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 16,
+          fontSize: 18,
           fontWeight: FontWeight.w700,
           color: AppColors.textTitle,
         ),
@@ -40,17 +41,17 @@ class AppTheme {
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
         selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textCaption,
+        unselectedItemColor: AppColors.mute,
         type: BottomNavigationBarType.fixed,
-        elevation: 8,
+        elevation: 0,
         selectedLabelStyle: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
         ),
         unselectedLabelStyle: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: FontWeight.w400,
         ),
       ),
@@ -63,11 +64,11 @@ class AppTheme {
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
           textStyle: const TextStyle(
             fontFamily: 'Pretendard',
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -81,12 +82,12 @@ class AppTheme {
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
           side: BorderSide.none,
           textStyle: const TextStyle(
             fontFamily: 'Pretendard',
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -95,12 +96,11 @@ class AppTheme {
       // Card
       cardTheme: CardThemeData(
         color: AppColors.cardBackground,
-        elevation: 1,
+        elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: AppColors.divider, width: 0.5),
+          borderRadius: BorderRadius.circular(16),
         ),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       ),
 
       // Chip
@@ -110,13 +110,13 @@ class AppTheme {
         checkmarkColor: Colors.white,
         labelStyle: const TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 12,
+          fontSize: 13,
           fontWeight: FontWeight.w500,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        side: const BorderSide(color: AppColors.divider),
+        side: BorderSide.none,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       ),
 
@@ -131,37 +131,37 @@ class AppTheme {
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 20,
+          fontSize: 22,
           fontWeight: FontWeight.w700,
           color: AppColors.textTitle,
         ),
         headlineMedium: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 16,
+          fontSize: 17,
           fontWeight: FontWeight.w700,
           color: AppColors.textTitle,
         ),
         headlineSmall: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 14,
+          fontSize: 15,
           fontWeight: FontWeight.w600,
           color: AppColors.textTitle,
         ),
         bodyLarge: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 14,
+          fontSize: 15,
           fontWeight: FontWeight.w400,
           color: AppColors.textBody,
         ),
         bodyMedium: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 12,
+          fontSize: 13,
           fontWeight: FontWeight.w400,
           color: AppColors.textCaption,
         ),
         labelLarge: TextStyle(
           fontFamily: 'Pretendard',
-          fontSize: 12,
+          fontSize: 13,
           fontWeight: FontWeight.w500,
           color: AppColors.textBody,
         ),

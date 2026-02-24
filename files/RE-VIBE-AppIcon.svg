@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="rg" x1="0%" y1="0%" x2="70%" y2="30%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <clipPath id="rr"><rect width="512" height="512" rx="112" ry="112"/></clipPath>
+  </defs>
+  <g clip-path="url(#rr)">
+    <rect width="512" height="512" fill="white"/>
+    <text x="55" y="385" font-family="Georgia, 'Times New Roman', serif" font-size="380" font-weight="bold" fill="url(#rg)">R</text>
+    <circle cx="380" cy="220" r="28" fill="url(#rg)"/>
+    <circle cx="380" cy="318" r="28" fill="url(#rg)" opacity="0.4"/>
+  </g>
+</svg>

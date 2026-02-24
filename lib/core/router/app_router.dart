@@ -8,7 +8,6 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/onboarding/presentation/welcome_screen.dart';
 import '../../features/onboarding/presentation/capture_screen.dart';
 import '../../features/onboarding/presentation/confirm_screen.dart';
-import '../../features/home/presentation/home_screen.dart';
 import '../../features/wardrobe/presentation/wardrobe_screen.dart';
 import '../../features/wardrobe/presentation/item_detail_screen.dart';
 import '../../features/wardrobe/presentation/item_add_screen.dart';
@@ -22,6 +21,7 @@ import '../../features/daily/presentation/wardrobe_picker_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/subscription/presentation/paywall_screen.dart';
 import '../../features/subscription/presentation/subscription_manage_screen.dart';
+import '../../features/splash/presentation/splash_screen.dart';
 import '../../shared/widgets/bottom_nav_bar.dart';
 
 // Route paths
@@ -31,7 +31,6 @@ class AppRoutes {
   static const String welcome = '/onboarding/welcome';
   static const String capture = '/onboarding/capture';
   static const String confirm = '/onboarding/confirm';
-  static const String home = '/home';
   static const String wardrobe = '/wardrobe';
   static const String wardrobeDetail = '/wardrobe/:id';
   static const String wardrobeAdd = '/wardrobe/add';
@@ -40,8 +39,8 @@ class AppRoutes {
   static const String recreationAnalyzing = '/recreation/analyzing';
   static const String recreationResult = '/recreation/result/:id';
   static const String recreationGap = '/recreation/gap/:id';
+  static const String daily = '/daily';
   static const String settings = '/settings';
-  static const String dailyRecord = '/daily-record';
   static const String dailyRecordCreate = '/daily-record/create';
   static const String dailyRecordPickItems = '/daily-record/pick-items';
   static const String paywall = '/paywall';
@@ -90,6 +89,13 @@ void resetOnboardingCache() {
   _cachedUserId = null;
 }
 
+// Pending onboarding skip flag (set by Welcome "건너뛰기" button)
+bool _pendingOnboardingSkip = false;
+
+void setPendingOnboardingSkip(bool value) {
+  _pendingOnboardingSkip = value;
+}
+
 /// Converts a Stream to a Listenable for GoRouter refresh
 class _AuthStreamNotifier extends ChangeNotifier {
   late final StreamSubscription _subscription;
@@ -121,39 +127,67 @@ GoRouter createRouter(Ref ref) {
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: AppRoutes.home,
+    initialLocation: AppRoutes.splash,
     refreshListenable: authNotifier,
     redirect: (context, state) async {
       final isLoggedIn =
           SupabaseConfig.client.auth.currentSession != null;
+      final isOnSplash = state.matchedLocation == AppRoutes.splash;
       final isOnLoginPage = state.matchedLocation == AppRoutes.login;
       final isOnOnboarding =
           state.matchedLocation.startsWith('/onboarding');
 
-      // Not logged in -> login
-      if (!isLoggedIn && !isOnLoginPage) {
-        return AppRoutes.login;
-      }
+      // Splash screen: don't redirect
+      if (isOnSplash) return null;
 
-      // Not logged in, already on login -> stay
-      if (!isLoggedIn) return null;
-
-      // Logged in: check onboarding status
-      final onboardingDone = await _isOnboardingCompleted();
-
-      // On login page -> go to onboarding or home
-      if (isOnLoginPage) {
-        return onboardingDone ? AppRoutes.home : AppRoutes.welcome;
-      }
-
-      // On main pages but onboarding not done -> redirect to onboarding
-      if (!isOnOnboarding && !onboardingDone) {
+      // Not logged in
+      if (!isLoggedIn) {
+        // Allow access to login and onboarding pages
+        if (isOnLoginPage || isOnOnboarding) return null;
+        // Redirect to Welcome (not Login — onboarding first)
         return AppRoutes.welcome;
+      }
+
+      // --- Logged in ---
+
+      // On login page: determine post-login destination
+      if (isOnLoginPage) {
+        if (_pendingOnboardingSkip) {
+          // "건너뛰기" was pressed: mark onboarding complete
+          _pendingOnboardingSkip = false;
+          final user = SupabaseConfig.client.auth.currentUser;
+          if (user != null) {
+            try {
+              await SupabaseConfig.client.from('profiles').update({
+                'onboarding_completed': true,
+              }).eq('id', user.id);
+            } catch (_) {}
+          }
+          markOnboardingCompleted();
+          return AppRoutes.wardrobe;
+        }
+        final onboardingDone = await _isOnboardingCompleted();
+        return onboardingDone ? AppRoutes.wardrobe : AppRoutes.capture;
+      }
+
+      // On onboarding pages (capture/confirm): allow
+      if (isOnOnboarding) return null;
+
+      // On main pages but onboarding not done: redirect to Capture
+      final onboardingDone = await _isOnboardingCompleted();
+      if (!onboardingDone) {
+        return AppRoutes.capture;
       }
 
       return null;
     },
     routes: [
+      // Splash
+      GoRoute(
+        path: AppRoutes.splash,
+        builder: (context, state) => const SplashScreen(),
+      ),
+
       // Login (outside shell)
       GoRoute(
         path: AppRoutes.login,
@@ -163,7 +197,26 @@ GoRouter createRouter(Ref ref) {
       // Onboarding (outside shell)
       GoRoute(
         path: AppRoutes.welcome,
-        builder: (context, state) => const WelcomeScreen(),
+        pageBuilder: (context, state) {
+          final initialPage = state.extra as int? ?? 0;
+          // 로그인에서 돌아올 때(initialPage > 0) 왼쪽에서 슬라이드
+          if (initialPage > 0) {
+            return CustomTransitionPage(
+              child: WelcomeScreen(initialPage: initialPage),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                final offsetAnimation = Tween<Offset>(
+                  begin: const Offset(-1.0, 0.0),
+                  end: Offset.zero,
+                ).animate(CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeInOut,
+                ));
+                return SlideTransition(position: offsetAnimation, child: child);
+              },
+            );
+          }
+          return MaterialPage(child: WelcomeScreen(initialPage: initialPage));
+        },
       ),
       GoRoute(
         path: AppRoutes.capture,
@@ -180,12 +233,6 @@ GoRouter createRouter(Ref ref) {
         builder: (context, state, child) => MainShell(child: child),
         routes: [
           GoRoute(
-            path: AppRoutes.home,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: HomeScreen(),
-            ),
-          ),
-          GoRoute(
             path: AppRoutes.wardrobe,
             pageBuilder: (context, state) => const NoTransitionPage(
               child: WardrobeScreen(),
@@ -195,6 +242,12 @@ GoRouter createRouter(Ref ref) {
             path: AppRoutes.recreation,
             pageBuilder: (context, state) => const NoTransitionPage(
               child: ReferenceInputScreen(),
+            ),
+          ),
+          GoRoute(
+            path: AppRoutes.daily,
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: CalendarScreen(),
             ),
           ),
           GoRoute(
@@ -232,13 +285,8 @@ GoRouter createRouter(Ref ref) {
           recreationId: state.pathParameters['id']!,
         ),
       ),
-      // GapAnalysisSheet is now shown as a bottom sheet from ResultScreen
 
       // Daily Record routes (outside shell, full screen)
-      GoRoute(
-        path: AppRoutes.dailyRecord,
-        builder: (context, state) => const CalendarScreen(),
-      ),
       GoRoute(
         path: AppRoutes.dailyRecordCreate,
         builder: (context, state) {
@@ -277,9 +325,9 @@ class MainShell extends StatelessWidget {
 
   int _calculateSelectedIndex(BuildContext context) {
     final location = GoRouterState.of(context).matchedLocation;
-    if (location.startsWith(AppRoutes.home)) return 0;
-    if (location.startsWith(AppRoutes.wardrobe)) return 1;
-    if (location.startsWith(AppRoutes.recreation)) return 2;
+    if (location.startsWith(AppRoutes.wardrobe)) return 0;
+    if (location.startsWith(AppRoutes.recreation)) return 1;
+    if (location.startsWith(AppRoutes.daily)) return 2;
     if (location.startsWith(AppRoutes.settings)) return 3;
     return 0;
   }
@@ -287,11 +335,11 @@ class MainShell extends StatelessWidget {
   void _onItemTapped(int index, BuildContext context) {
     switch (index) {
       case 0:
-        context.go(AppRoutes.home);
-      case 1:
         context.go(AppRoutes.wardrobe);
-      case 2:
+      case 1:
         context.go(AppRoutes.recreation);
+      case 2:
+        context.go(AppRoutes.daily);
       case 3:
         context.go(AppRoutes.settings);
     }

@@ -133,7 +133,7 @@ class _ConfirmScreenState extends ConsumerState<ConfirmScreen> {
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
-              if (context.mounted) context.go(AppRoutes.home);
+              if (context.mounted) context.go(AppRoutes.wardrobe);
             },
             child: Text(
               '나중에',
@@ -156,7 +156,7 @@ class _ConfirmScreenState extends ConsumerState<ConfirmScreen> {
     await _completeOnboarding();
     ref.read(onboardingAnalyzeProvider.notifier).reset();
     if (mounted) {
-      context.go(AppRoutes.home);
+      context.go(AppRoutes.wardrobe);
     }
   }
 

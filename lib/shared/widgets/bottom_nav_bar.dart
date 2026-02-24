@@ -17,11 +17,6 @@ class AppBottomNavBar extends StatelessWidget {
       onTap: onTap,
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home),
-          label: '홈',
-        ),
-        BottomNavigationBarItem(
           icon: Icon(Icons.checkroom_outlined),
           activeIcon: Icon(Icons.checkroom),
           label: '옷장',
@@ -30,6 +25,11 @@ class AppBottomNavBar extends StatelessWidget {
           icon: Icon(Icons.auto_awesome_outlined),
           activeIcon: Icon(Icons.auto_awesome),
           label: '룩재현',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.calendar_today_outlined),
+          activeIcon: Icon(Icons.calendar_today),
+          label: '데일리',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person_outline),

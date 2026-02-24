@@ -82,7 +82,7 @@ class HomeScreen extends StatelessWidget {
                     _QuickActionButton(
                       icon: Icons.edit_note,
                       label: '기록',
-                      onTap: () => context.push(AppRoutes.dailyRecord),
+                      onTap: () => context.go(AppRoutes.daily),
                     ),
                   ],
                 ),

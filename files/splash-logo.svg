@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" width="600" height="420">
+  <!-- RE:VIBE Splash Logo -->
+  <!-- R lettermark -->
+  <text x="70" y="73"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="72"
+        font-weight="bold"
+        fill="#4F46E5">R</text>
+
+  <!-- Top dot (solid) -->
+  <circle cx="121" cy="37" r="6.5" fill="#4F46E5"/>
+
+  <!-- Bottom dot (35% opacity) -->
+  <circle cx="121" cy="57" r="6.5" fill="#4F46E5" opacity="0.35"/>
+
+  <!-- RE:VIBE text -->
+  <text x="100" y="110"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="18"
+        font-weight="600"
+        fill="#8E8E8E"
+        text-anchor="middle"
+        letter-spacing="6">RE:VIBE</text>
+</svg>

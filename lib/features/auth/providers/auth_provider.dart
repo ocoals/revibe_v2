@@ -32,6 +32,7 @@ class AuthService {
     await _client.auth.signInWithOAuth(
       OAuthProvider.kakao,
       redirectTo: 'com.closetiq.closetiq://login-callback',
+      scopes: 'profile_nickname,profile_image',
     );
   }
 

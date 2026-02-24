@@ -15,6 +15,9 @@ class RevenueCatConfig {
   /// Entitlement identifier configured in RevenueCat dashboard
   static const String entitlementId = 'premium';
 
+  /// Whether RevenueCat was successfully configured
+  static bool isConfigured = false;
+
   /// Initialize RevenueCat SDK. Call once at app startup.
   static Future<void> initialize({String? userId}) async {
     final apiKey = Platform.isIOS ? _appleApiKey : _googleApiKey;
@@ -25,10 +28,12 @@ class RevenueCatConfig {
       config.appUserID = userId;
     }
     await Purchases.configure(config);
+    isConfigured = true;
   }
 
   /// Log in user to RevenueCat (call after Supabase auth)
   static Future<void> login(String userId) async {
+    if (!isConfigured) return;
     try {
       await Purchases.logIn(userId);
     } catch (_) {
@@ -38,6 +43,7 @@ class RevenueCatConfig {
 
   /// Log out from RevenueCat (call on sign out)
   static Future<void> logout() async {
+    if (!isConfigured) return;
     try {
       await Purchases.logOut();
     } catch (_) {
