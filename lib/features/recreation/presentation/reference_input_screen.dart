@@ -10,7 +10,7 @@ import '../providers/usage_provider.dart';
 import '../providers/recreation_provider.dart';
 import 'widgets/recreation_history_card.dart';
 
-/// S09: Look recreation - reference image input
+/// Look recreation — reference image input
 class ReferenceInputScreen extends ConsumerStatefulWidget {
   const ReferenceInputScreen({super.key});
 
@@ -45,151 +45,230 @@ class _ReferenceInputScreenState extends ConsumerState<ReferenceInputScreen> {
     final historyAsync = ref.watch(recreationHistoryProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('룩 재현')),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              // Remaining count
-              remainingAsync.when(
-                data: (remaining) => Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Text(
-                    '이번 달 잔여 횟수: $remaining/${AppConfig.freeRecreationMonthlyLimit}회',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: remaining > 0
-                          ? AppColors.textBody
-                          : AppColors.error,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+      backgroundColor: AppColors.background,
+      body: Column(
+          children: [
+            // Header — white bg with border, extends behind status bar
+            Container(
+              padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 8, 16, 14),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: BorderSide(color: AppColors.divider, width: 0.5),
                 ),
-                loading: () => const SizedBox(height: 32),
-                error: (_, _) => const SizedBox(height: 32),
               ),
-              const SizedBox(height: 16),
-
-              // Image placeholder
-              Container(
-                width: double.infinity,
-                height: 300,
-                decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.2),
-                    width: 2,
-                  ),
-                ),
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
                   children: [
-                    Icon(
-                      Icons.auto_awesome,
-                      size: 48,
-                      color: AppColors.primary,
+                    const Text('R', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.primary, fontFamily: 'Georgia')),
+                    const SizedBox(width: 3),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 1),
+                      child: Column(mainAxisSize: MainAxisSize.min, children: [
+                        Container(width: 4.5, height: 4.5, decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.primary)),
+                        const SizedBox(height: 2.5),
+                        Container(width: 4.5, height: 4.5, decoration: BoxDecoration(shape: BoxShape.circle, color: AppColors.primary.withValues(alpha: 0.35))),
+                      ]),
                     ),
-                    SizedBox(height: 16),
-                    Text(
-                      '따라하고 싶은 코디 사진을\n선택해주세요',
+                    const SizedBox(width: 6),
+                    const Text(
+                      '룩 재현',
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
-                        height: 1.5,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textTitle,
                       ),
-                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+            ),
 
-              // Pick button
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: remainingAsync.when(
-                  data: (remaining) => ElevatedButton.icon(
-                    onPressed: remaining > 0 ? _pickImage : null,
-                    icon: const Icon(Icons.photo_library),
-                    label: Text(remaining > 0
-                        ? '갤러리에서 선택'
-                        : '이번 달 무료 횟수를 모두 사용했어요'),
-                  ),
-                  loading: () => const ElevatedButton(
-                    onPressed: null,
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  ),
-                  error: (_, _) => ElevatedButton.icon(
-                    onPressed: _pickImage,
-                    icon: const Icon(Icons.photo_library),
-                    label: const Text('갤러리에서 선택'),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                '인스타그램 등에서 공유 버튼으로도\n이미지를 전달할 수 있어요',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textCaption,
-                  height: 1.5,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-
-              // History section
-              historyAsync.when(
-                data: (history) {
-                  if (history.isEmpty) return const SizedBox.shrink();
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        '최근 재현',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textTitle,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        height: 180,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: history.length,
-                          separatorBuilder: (_, _) => const SizedBox(width: 12),
-                          itemBuilder: (_, index) {
-                            final rec = history[index];
-                            return RecreationHistoryCard(
-                              recreation: rec,
-                              onTap: () => context.push(
-                                '/recreation/result/${rec.id}',
+            // Content
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Upload card — tappable
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                      child: GestureDetector(
+                        onTap: () {
+                          final remaining = remainingAsync.valueOrNull;
+                          if (remaining == null || remaining > 0) {
+                            _pickImage();
+                          }
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          height: 200,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x0A000000),
+                                blurRadius: 2,
+                                offset: Offset(0, 1),
+                                spreadRadius: 0.5,
                               ),
-                            );
-                          },
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.background,
+                                ),
+                                child: const Icon(
+                                  Icons.camera_alt_outlined,
+                                  size: 26,
+                                  color: AppColors.textCaption,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              const Text(
+                                '사진 선택하기',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textTitle,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              const Text(
+                                '갤러리에서 고르거나 직접 찍어주세요',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.textCaption,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ],
-                  );
-                },
-                loading: () => const SizedBox.shrink(),
-                error: (_, _) => const SizedBox.shrink(),
+                    ),
+
+                    // Recent section — vertical list in card
+                    historyAsync.when(
+                      data: (history) {
+                        if (history.isEmpty) return const SizedBox.shrink();
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    '최근 분석',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textTitle,
+                                    ),
+                                  ),
+                                  if (history.length > 3)
+                                    GestureDetector(
+                                      onTap: () {},
+                                      child: const Text(
+                                        '더보기',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: AppColors.textCaption,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Color(0x0A000000),
+                                      blurRadius: 2,
+                                      offset: Offset(0, 1),
+                                      spreadRadius: 0.5,
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: history.take(3).toList().asMap().entries.map((entry) {
+                                    final index = entry.key;
+                                    final rec = entry.value;
+                                    final isLast = index == (history.length > 3 ? 2 : history.length - 1);
+                                    return Column(
+                                      children: [
+                                        RecreationHistoryCard(
+                                          recreation: rec,
+                                          onTap: () => context.push(
+                                            '/recreation/result/${rec.id}',
+                                          ),
+                                        ),
+                                        if (!isLast)
+                                          const Padding(
+                                            padding: EdgeInsets.symmetric(horizontal: 14),
+                                            child: Divider(
+                                              height: 0.5,
+                                              color: AppColors.divider,
+                                            ),
+                                          ),
+                                      ],
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      loading: () => const SizedBox.shrink(),
+                      error: (_, _) => const SizedBox.shrink(),
+                    ),
+
+                    // Remaining count — centered text
+                    Padding(
+                      padding: const EdgeInsets.only(top: 18, bottom: 100),
+                      child: Center(
+                        child: remainingAsync.when(
+                          data: (remaining) => RichText(
+                            text: TextSpan(
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textCaption,
+                              ),
+                              children: [
+                                const TextSpan(text: '이번 달 남은 횟수 '),
+                                TextSpan(
+                                  text: '$remaining/${AppConfig.freeRecreationMonthlyLimit}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          loading: () => const SizedBox.shrink(),
+                          error: (_, _) => const SizedBox.shrink(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
+            ),
+          ],
       ),
     );
   }
